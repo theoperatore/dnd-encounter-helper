@@ -92,6 +92,7 @@ App = React.createClass({
       idx++;
     }
 
+    console.log("indexes", this.state.active_idx, idx);
     tmp[idx].active = true;
     this.setState({ players : tmp, active_idx : idx });
   },
