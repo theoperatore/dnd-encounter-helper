@@ -1,0 +1,32 @@
+.fixed {
+  position:fixed;
+  bottom:0;
+  z-index: 1337;
+}
+
+.spacer { 
+  height: 45px;
+  width: 100%;
+}
+
+.btn-group>.btn {
+  border-radius: 0px !important;
+}
+
+.initiative-enter {
+  opacity: 0.01;
+  transition: all 250ms ease-in;
+}
+
+.initiative-enter.initiative-active {
+  opacity: 1;
+}
+
+.initiative-leave {
+  opacity: 1;
+  transition: all 250ms ease-in;
+}
+
+.initiative-leave.initiative-active {
+  opacity: 0.01;
+}

@@ -1,0 +1,18 @@
+{
+  "name": "dm-companion",
+  "version": "0.1.0",
+  "description": "encounter helper for any dm",
+  "main": "index.js",
+  "scripts": {
+    "test": "browserify -t reactify index.js -o bundle.js && beefy"
+  },
+  "author": "Alex Petersen <theoperatore@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "beefy": "^2.1.1",
+    "browserify": "^7.0.0",
+    "react": "^0.12.1",
+    "react-bootstrap": "^0.13.0",
+    "reactify": "^0.17.1"
+  }
+}
