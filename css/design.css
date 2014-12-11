@@ -9,6 +9,13 @@
   width: 100%;
 }
 
+.list-group {
+  margin-bottom: 0;
+}
+.list-group-item {
+  transition: all 250ms;
+}
+
 .btn-group>.btn {
   border-radius: 0px !important;
 }

@@ -3,8 +3,50 @@ var React = require('react'),
     ListGroup = require('react-bootstrap/ListGroup'),
     ListGroupItem = require('react-bootstrap/ListGroupItem'),
     Input = require('react-bootstrap/Input'),
+    Label = require('react-bootstrap/Label'),
+    Button = require('react-bootstrap/Button'),
     Header = require('./header'),
-    App;
+    App, Player;
+
+Player = React.createClass({
+  getInitialState : function() {
+    return ({ dmg : 0 });
+  },
+  handleChange : function(e) {
+    this.setState({ dmg : (parseInt(e.target.value, 10) || 0 )});
+  },
+  handleSubmit : function() {
+    //this.props.onDmgAdd(this.state.dmg);
+    this.props.curr.dmg += this.state.dmg;
+    this.setState({ dmg : 0 });
+
+    if (this.props.curr.dmg >= this.props.curr.hp) {
+      this.props.curr.dead = true;
+    }
+
+    this.props.onDmgAdd({ player : this.props.curr, idx : this.props.idx });
+  },
+  render : function() {
+    return (
+      <ListGroupItem bsStyle={(this.props.curr.active) ? "success" : null} disabled={(this.props.curr.dead) ? true : false }>
+        <h3>{this.props.curr.name} <small>@ {this.props.curr.initiative} initiative</small> <Label bsStyle="warning">{((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0) ? "bloodied" : ""}</Label> <Label bsStyle="danger">{(this.props.curr.dead) ? "dead" : "" }</Label></h3>
+        <Input
+          disabled={(this.props.curr.dead) ? true : false }
+          className={(this.props.curr.hp === 0) ? "hide" : ""}
+          type="text" 
+          placeholder="damage taken"
+          addonAfter={this.props.curr.hp}
+          addonBefore={this.props.curr.dmg}
+          onChange={this.handleChange}
+          value={(this.state.dmg === 0) ? "" : this.state.dmg}
+        />
+        <Button className={(this.props.curr.hp === 0)? "hide" : ""} disabled={(this.props.curr.dead) ? true : false } bsStyle="default" onClick={this.handleSubmit}>
+          Add Damage
+        </Button>
+      </ListGroupItem>
+    );
+  }
+});
 
 App = React.createClass({
   getInitialState : function() {
@@ -14,7 +56,17 @@ App = React.createClass({
   handleAdd : function(data) {
     console.log("adding", data);
     var tmp = this.state.players;
-    tmp.push({ name: data.name, initiative : data.initiative, hp: data.hp, active : false });
+    tmp.push(
+      { 
+        name: data.name,
+        initiative : data.initiative,
+        hp: data.hp,
+        dmg : 0,
+        active : false,
+        dead : false,
+        delayed : false
+      }
+    );
 
     // sort when adding
     tmp.sort(function(a,b) {
@@ -40,27 +92,28 @@ App = React.createClass({
     var next = (this.state.active_idx + 1) % this.state.players.length,
         tmp = this.state.players;
 
+    while (tmp[next].dead === true || tmp[next].delayed === true) {
+      next++;
+    }
+
     tmp[this.state.active_idx].active = false;
     tmp[next].active = true;
 
     this.setState({ players : tmp, active_idx : next });
   },
+  handleDmgAdd : function(player) {
+    var tmp = this.state.players;
+
+    tmp[player.idx] = player.player;
+    this.setState({ players : tmp });
+  },
   render : function() {
     var players = [];
 
-    for (var i = 0, curr, out; i < this.state.players.length; i++) {
+    for (var i = 0, curr; i < this.state.players.length; i++) {
       curr = this.state.players[i];
-      if (curr.active) {
-        out = <ListGroupItem bsStyle="success" key={i}>
-                <h3>{curr.name} <small>@ {curr.initiative} initiative</small></h3>
-              </ListGroupItem>;
-      }
-      else {
-        out = <ListGroupItem key={i}>
-                <h3>{curr.name} <small>@ {curr.initiative} initiative</small></h3>
-              </ListGroupItem>
-      }
-      players.push(out);
+      
+      players.push(<Player key={i} idx={i} curr={curr} onDmgAdd={this.handleDmgAdd} />);
     }
 
     return (
