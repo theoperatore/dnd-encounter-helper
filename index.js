@@ -85,9 +85,15 @@ App = React.createClass({
     this.setState({ players : [] });
   },
   start : function() {
-    var tmp = this.state.players;
-    tmp[this.state.active_idx].active = true;
-    this.setState({ players : tmp });
+    var tmp = this.state.players,
+        idx = this.state.active_idx;
+
+    while(tmp[idx].dead === true || tmp[idx].delayed === true) {
+      idx++;
+    }
+
+    tmp[idx].active = true;
+    this.setState({ players : tmp, active_idx : idx });
   },
   next : function() {
     var next = (this.state.active_idx + 1) % this.state.players.length,
