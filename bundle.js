@@ -150,7 +150,7 @@ Player = React.createClass({displayName: 'Player',
   render : function() {
     return (
       React.createElement(ListGroupItem, {bsStyle: (this.props.curr.active) ? "success" : null, disabled: (this.props.curr.dead) ? true : false}, 
-        React.createElement("h3", null, this.props.curr.name, " ", React.createElement("small", null, "@ ", this.props.curr.initiative, " initiative"), " ", React.createElement(Label, {bsStyle: "warning"}, ((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0) ? "bloodied" : ""), " ", React.createElement(Label, {bsStyle: "danger"}, (this.props.curr.dead) ? "dead" : "")), 
+        React.createElement("h3", null, this.props.curr.name, " ", React.createElement("small", null, "@ ", this.props.curr.initiative, " initiative")), 
         React.createElement(Input, {
           disabled: (this.props.curr.dead) ? true : false, 
           className: (this.props.curr.hp === 0) ? "hide" : "", 
@@ -163,7 +163,8 @@ Player = React.createClass({displayName: 'Player',
         ), 
         React.createElement(Button, {className: (this.props.curr.hp === 0)? "hide" : "", disabled: (this.props.curr.dead) ? true : false, bsStyle: "default", onClick: this.handleSubmit}, 
           "Add Damage"
-        )
+        ), 
+        React.createElement("p", null, React.createElement(Label, {bsStyle: "warning"}, ((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0) ? "bloodied" : ""), " ", React.createElement(Label, {bsStyle: "danger"}, (this.props.curr.dead) ? "dead" : ""))
       )
     );
   }

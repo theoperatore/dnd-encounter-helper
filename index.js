@@ -29,7 +29,7 @@ Player = React.createClass({
   render : function() {
     return (
       <ListGroupItem bsStyle={(this.props.curr.active) ? "success" : null} disabled={(this.props.curr.dead) ? true : false }>
-        <h3>{this.props.curr.name} <small>@ {this.props.curr.initiative} initiative</small> <Label bsStyle="warning">{((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0) ? "bloodied" : ""}</Label> <Label bsStyle="danger">{(this.props.curr.dead) ? "dead" : "" }</Label></h3>
+        <h3>{this.props.curr.name} <small>@ {this.props.curr.initiative} initiative</small></h3>
         <Input
           disabled={(this.props.curr.dead) ? true : false }
           className={(this.props.curr.hp === 0) ? "hide" : ""}
@@ -43,6 +43,7 @@ Player = React.createClass({
         <Button className={(this.props.curr.hp === 0)? "hide" : ""} disabled={(this.props.curr.dead) ? true : false } bsStyle="default" onClick={this.handleSubmit}>
           Add Damage
         </Button>
+        <p><Label bsStyle="warning">{((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0) ? "bloodied" : ""}</Label> <Label bsStyle="danger">{(this.props.curr.dead) ? "dead" : "" }</Label></p>
       </ListGroupItem>
     );
   }
