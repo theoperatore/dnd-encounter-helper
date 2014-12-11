@@ -8,6 +8,7 @@ var React = require('react'),
 
 App = React.createClass({
   getInitialState : function() {
+    var local = JSON.parse(localStorage.getItem("players")) || [];
     return ({ players : [], active_idx : 0 });
   },
   handleAdd : function(data) {
@@ -21,6 +22,8 @@ App = React.createClass({
       if (a.initiative < b.initiative) return 1;
       return 0;
     });
+
+    localStorage.setItem("players", JSON.stringify(tmp));
     this.setState({ players : tmp });
   },
   handleClear : function() {
