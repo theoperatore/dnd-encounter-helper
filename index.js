@@ -8,8 +8,8 @@ var React = require('react'),
 
 App = React.createClass({
   getInitialState : function() {
-    var local = JSON.parse(localStorage.getItem("players")) || [];
-    return ({ players : [], active_idx : 0 });
+    var local = JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_players")) || [];
+    return ({ players : local, active_idx : 0 });
   },
   handleAdd : function(data) {
     console.log("adding", data);
@@ -23,11 +23,12 @@ App = React.createClass({
       return 0;
     });
 
-    localStorage.setItem("players", JSON.stringify(tmp));
+    localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
     this.setState({ players : tmp });
   },
   handleClear : function() {
     console.log("clearing all");
+    localStorage.removeItem("__dnd_companion_encounter_helper_players");
     this.setState({ players : [] });
   },
   start : function() {
