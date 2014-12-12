@@ -70,12 +70,12 @@ Player = React.createClass({
         <ButtonGroup justified={true} className={(this.props.curr.hp === 0 || this.state.show === false)? "hide" : ""}>
           <ButtonGroup>
             <Button disabled={(this.props.curr.dead) ? true : false } bsStyle="default" onClick={this.handleDamage}>
-              Add Damage
+              Damage
             </Button>
           </ButtonGroup>
           <ButtonGroup>
             <Button disabled={(this.props.curr.dead) ? true : false } bsStyle="default" onClick={this.handleHeal}>
-              Heal Damage
+              Heal
             </Button>
           </ButtonGroup>
           <ButtonGroup>

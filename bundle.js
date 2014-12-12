@@ -191,12 +191,12 @@ Player = React.createClass({displayName: 'Player',
         React.createElement(ButtonGroup, {justified: true, className: (this.props.curr.hp === 0 || this.state.show === false)? "hide" : ""}, 
           React.createElement(ButtonGroup, null, 
             React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsStyle: "default", onClick: this.handleDamage}, 
-              "Add Damage"
+              "Damage"
             )
           ), 
           React.createElement(ButtonGroup, null, 
             React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsStyle: "default", onClick: this.handleHeal}, 
-              "Heal Damage"
+              "Heal"
             )
           ), 
           React.createElement(ButtonGroup, null, 
