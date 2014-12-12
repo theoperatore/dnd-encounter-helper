@@ -78,6 +78,11 @@ Player = React.createClass({
               Heal Damage
             </Button>
           </ButtonGroup>
+          <ButtonGroup>
+            <Button disabled={(this.props.curr.dead) ? true : false } bsSTyle="default" onClick={this.handleDelay}>
+              Delay Turn
+            </Button>
+          </ButtonGroup>
         </ButtonGroup>
         <Button bsSize="xsmall" className={"options center-block" + ((this.props.curr.hp === 0) ? " hide" : "")} onClick={this.show}><Glyphicon glyph={(this.state.show === false) ? "chevron-down" : "chevron-up"} /></Button>
       </ListGroupItem>
@@ -87,11 +92,12 @@ Player = React.createClass({
 
 App = React.createClass({
   getInitialState : function() {
-    var local = JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_players")) || [];
+    var local = JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_players")) || [],
+        turn_idx = parseInt(JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_idx")),10) || 0
     return (
       { 
         players : local,
-        active_idx : 0 
+        active_idx : turn_idx
       }
     );
   },
@@ -124,7 +130,8 @@ App = React.createClass({
   handleClear : function() {
     console.log("clearing all");
     localStorage.removeItem("__dnd_companion_encounter_helper_players");
-    this.setState({ players : [] });
+    localStorage.removeItem("__dnd_companion_encounter_helper_idx");
+    this.setState({ players : [], active_idx : 0 });
   },
   start : function() {
     var tmp = this.state.players,
@@ -150,6 +157,8 @@ App = React.createClass({
     tmp[next].active = true;
 
     this.setState({ players : tmp, active_idx : next });
+    localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
+    localStorage.setItem("__dnd_companion_encounter_helper_idx", JSON.stringify(next));
   },
   handleDmgAdd : function(player) {
     var tmp = this.state.players;
@@ -157,6 +166,7 @@ App = React.createClass({
     tmp[player.idx] = player.player;
     this.setState({ players : tmp });
     localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
+    localStorage.setItem("__dnd_companion_encounter_helper_idx", JSON.stringify(this.state.active_idx));
   },
   render : function() {
     var players = [];
