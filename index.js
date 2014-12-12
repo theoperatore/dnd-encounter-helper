@@ -5,17 +5,20 @@ var React = require('react'),
     Input = require('react-bootstrap/Input'),
     Label = require('react-bootstrap/Label'),
     Button = require('react-bootstrap/Button'),
+    ButtonGroup = require('react-bootstrap/ButtonGroup'),
+    ProgressBar = require('react-bootstrap/ProgressBar'),
+    Glyphicon = require('react-bootstrap/Glyphicon'),
     Header = require('./header'),
     App, Player;
 
 Player = React.createClass({
   getInitialState : function() {
-    return ({ dmg : 0 });
+    return ({ dmg : 0, show : false });
   },
   handleChange : function(e) {
     this.setState({ dmg : (parseInt(e.target.value, 10) || 0 )});
   },
-  handleSubmit : function() {
+  handleDamage : function() {
     //this.props.onDmgAdd(this.state.dmg);
     this.props.curr.dmg += this.state.dmg;
     this.setState({ dmg : 0 });
@@ -26,23 +29,57 @@ Player = React.createClass({
 
     this.props.onDmgAdd({ player : this.props.curr, idx : this.props.idx });
   },
+  handleDelay : function() {},
+  handleHeal : function() {
+    this.props.curr.dmg -= this.state.dmg;
+    this.setState({ dmg : 0 });
+    this.props.curr.dmg = (this.props.curr.dmg < 0) ? 0 : this.props.curr.dmg;
+    this.props.onDmgAdd({ player: this.props.curr, idx : this.props.idx });
+  },
+  show : function() {
+    this.setState({ show : !this.state.show });
+  },
   render : function() {
+    var hpStyle, hpPercent;
+
+    if ((this.props.curr.hp - this.props.curr.dmg) <= Math.floor(this.props.curr.hp / 4)) {
+      hpStyle = "danger";
+    }
+    else if ((this.props.curr.hp - this.props.curr.dmg) <= Math.floor(this.props.curr.hp / 2)) {
+      hpStyle = "warning";
+    }
+    else {
+      hpStyle ="success";
+    }
+
+    hpPercent = (this.props.curr.hp - this.props.curr.dmg <= 0) ? 0 : Math.floor(((this.props.curr.hp - this.props.curr.dmg) / this.props.curr.hp)* 100);
+
     return (
-      <ListGroupItem bsStyle={(this.props.curr.active) ? "success" : null} disabled={(this.props.curr.dead) ? true : false }>
-        <h3>{this.props.curr.name} <small>@ {this.props.curr.initiative} initiative</small></h3>
-        <p><Label bsStyle="warning">{((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0) ? "bloodied" : ""}</Label> <Label bsStyle="danger">{(this.props.curr.dead) ? "dead" : "" }</Label></p>
+      <ListGroupItem bsStyle={(this.props.curr.active) ? "success" : null} disabled={(this.props.curr.dead) ? true : false } >
+        <h3>{this.props.curr.name} <small>@ {this.props.curr.initiative} initiative <Label bsStyle="warning">{((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0) ? "bloodied" : ""}</Label> <Label bsStyle="danger">{(this.props.curr.dead) ? "dead" : "" }</Label></small> </h3>
+        <ProgressBar className={(this.props.curr.hp === 0) ? "hide" : ""} bsStyle={hpStyle} label={(this.props.curr.hp - this.props.curr.dmg) + " / " + this.props.curr.hp} now={hpPercent} />
         <Input
           disabled={(this.props.curr.dead) ? true : false }
-          className={(this.props.curr.hp === 0) ? "hide" : ""}
+          className={(this.props.curr.hp === 0 || this.state.show === false) ? "hide" : ""}
           type="text" 
-          placeholder="damage taken"
-          addonBefore={(this.props.curr.hp === 0) ? "" : (this.props.curr.hp - this.props.curr.dmg) +  " / " + this.props.curr.hp}
+          placeholder="damage taken / healed"
+          addonBefore={(this.props.curr.hp === 0 || this.state.show === false) ? "" : (this.props.curr.hp - this.props.curr.dmg) +  " / " + this.props.curr.hp}
           onChange={this.handleChange}
           value={(this.state.dmg === 0) ? "" : this.state.dmg}
         />
-        <Button className={(this.props.curr.hp === 0)? "hide" : ""} disabled={(this.props.curr.dead) ? true : false } bsStyle="default" onClick={this.handleSubmit}>
-          Add Damage
-        </Button>
+        <ButtonGroup justified={true} className={(this.props.curr.hp === 0 || this.state.show === false)? "hide" : ""}>
+          <ButtonGroup>
+            <Button disabled={(this.props.curr.dead) ? true : false } bsStyle="default" onClick={this.handleDamage}>
+              Add Damage
+            </Button>
+          </ButtonGroup>
+          <ButtonGroup>
+            <Button disabled={(this.props.curr.dead) ? true : false } bsStyle="default" onClick={this.handleHeal}>
+              Heal Damage
+            </Button>
+          </ButtonGroup>
+        </ButtonGroup>
+        <Button bsSize="xsmall" className={"options center-block" + ((this.props.curr.hp === 0) ? " hide" : "")} onClick={this.show}><Glyphicon glyph={(this.state.show === false) ? "chevron-down" : "chevron-up"} /></Button>
       </ListGroupItem>
     );
   }
@@ -51,11 +88,17 @@ Player = React.createClass({
 App = React.createClass({
   getInitialState : function() {
     var local = JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_players")) || [];
-    return ({ players : local, active_idx : 0 });
+    return (
+      { 
+        players : local,
+        active_idx : 0 
+      }
+    );
   },
   handleAdd : function(data) {
     console.log("adding", data);
     var tmp = this.state.players;
+
     tmp.push(
       { 
         name: data.name,
@@ -113,6 +156,7 @@ App = React.createClass({
 
     tmp[player.idx] = player.player;
     this.setState({ players : tmp });
+    localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
   },
   render : function() {
     var players = [];

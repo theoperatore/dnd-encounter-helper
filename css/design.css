@@ -9,14 +9,24 @@
   width: 100%;
 }
 
+.options {
+  border-radius: 0px;
+  border: 0;
+  background-color: rgba(255, 255, 255, 0);
+}
+.options:hover, .options:focus {
+  background-color: rgba(255, 255, 255, 0);
+}
+
 .list-group {
   margin-bottom: 0;
 }
 .list-group-item {
   transition: all 250ms;
+  border-radius: 0px;
 }
 
-.btn-group>.btn {
+.fixed>.btn-group>.btn {
   border-radius: 0px !important;
 }
 
