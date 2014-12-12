@@ -56,7 +56,7 @@ Player = React.createClass({
 
     return (
       <ListGroupItem bsStyle={(this.props.curr.active) ? "success" : null} disabled={(this.props.curr.dead) ? true : false } >
-        <h3>{this.props.curr.name} <small>@ {this.props.curr.initiative} initiative <Label bsStyle="warning">{((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0) ? "bloodied" : ""}</Label> <Label bsStyle="danger">{(this.props.curr.dead) ? "dead" : "" }</Label></small> </h3>
+        <h3>{this.props.curr.name} <small>@ {this.props.curr.initiative} initiative <Label bsStyle="warning">{((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0 && !this.props.curr.dead) ? "bloodied" : ""}</Label> <Label bsStyle="danger">{(this.props.curr.dead) ? "dead" : "" }</Label></small> </h3>
         <ProgressBar className={(this.props.curr.hp === 0) ? "hide" : ""} bsStyle={hpStyle} label={(this.props.curr.hp - this.props.curr.dmg) + " / " + this.props.curr.hp} now={hpPercent} />
         <Input
           disabled={(this.props.curr.dead) ? true : false }
