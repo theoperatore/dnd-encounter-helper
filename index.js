@@ -29,7 +29,9 @@ Player = React.createClass({
 
     this.props.onDmgAdd({ player : this.props.curr, idx : this.props.idx });
   },
-  handleDelay : function() {},
+  handleDelay : function() {
+    alert("TRIGGER!");
+  },
   handleHeal : function() {
     this.props.curr.dmg -= this.state.dmg;
     this.setState({ dmg : 0 });
