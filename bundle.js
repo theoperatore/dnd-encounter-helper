@@ -122,96 +122,9 @@ module.exports = Header;
 /** @jsx React.dom */
 var React = require('react'),
     ListGroup = require('react-bootstrap/ListGroup'),
-    ListGroupItem = require('react-bootstrap/ListGroupItem'),
-    Input = require('react-bootstrap/Input'),
-    Label = require('react-bootstrap/Label'),
-    Button = require('react-bootstrap/Button'),
-    ButtonGroup = require('react-bootstrap/ButtonGroup'),
-    ProgressBar = require('react-bootstrap/ProgressBar'),
-    Glyphicon = require('react-bootstrap/Glyphicon'),
     Header = require('./header'),
-    App, Player;
-
-Player = React.createClass({displayName: 'Player',
-  getInitialState : function() {
-    return ({ dmg : 0, show : false });
-  },
-  handleChange : function(e) {
-    this.setState({ dmg : (parseInt(e.target.value, 10) || 0 )});
-  },
-  handleDamage : function() {
-    //this.props.onDmgAdd(this.state.dmg);
-    this.props.curr.dmg += this.state.dmg;
-    this.setState({ dmg : 0 });
-
-    if (this.props.curr.dmg >= this.props.curr.hp) {
-      this.props.curr.dead = true;
-    }
-
-    this.props.onDmgAdd({ player : this.props.curr, idx : this.props.idx });
-  },
-  handleDelay : function() {
-    alert("TRIGGER!");
-  },
-  handleHeal : function() {
-    this.props.curr.dmg -= this.state.dmg;
-    this.setState({ dmg : 0 });
-    this.props.curr.dmg = (this.props.curr.dmg < 0) ? 0 : this.props.curr.dmg;
-    this.props.onDmgAdd({ player: this.props.curr, idx : this.props.idx });
-  },
-  show : function() {
-    this.setState({ show : !this.state.show });
-  },
-  render : function() {
-    var hpStyle, hpPercent;
-
-    if ((this.props.curr.hp - this.props.curr.dmg) <= Math.floor(this.props.curr.hp / 4)) {
-      hpStyle = "danger";
-    }
-    else if ((this.props.curr.hp - this.props.curr.dmg) <= Math.floor(this.props.curr.hp / 2)) {
-      hpStyle = "warning";
-    }
-    else {
-      hpStyle ="success";
-    }
-
-    hpPercent = (this.props.curr.hp - this.props.curr.dmg <= 0) ? 0 : Math.floor(((this.props.curr.hp - this.props.curr.dmg) / this.props.curr.hp)* 100);
-
-    return (
-      React.createElement(ListGroupItem, {bsStyle: (this.props.curr.active) ? "success" : null, disabled: (this.props.curr.dead) ? true : false}, 
-        React.createElement("h3", null, this.props.curr.name, " ", React.createElement("small", null, "@ ", this.props.curr.initiative, " initiative ", React.createElement(Label, {bsStyle: "warning"}, ((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0 && !this.props.curr.dead) ? "bloodied" : ""), " ", React.createElement(Label, {bsStyle: "danger"}, (this.props.curr.dead) ? "dead" : "")), " "), 
-        React.createElement(ProgressBar, {className: (this.props.curr.hp === 0) ? "hide" : "", bsStyle: hpStyle, label: (this.props.curr.hp - this.props.curr.dmg) + " / " + this.props.curr.hp, now: hpPercent}), 
-        React.createElement(Input, {
-          disabled: (this.props.curr.dead) ? true : false, 
-          className: (this.props.curr.hp === 0 || this.state.show === false) ? "hide" : "", 
-          type: "text", 
-          placeholder: "damage taken / healed", 
-          addonBefore: (this.props.curr.hp === 0 || this.state.show === false) ? "" : (this.props.curr.hp - this.props.curr.dmg) +  " / " + this.props.curr.hp, 
-          onChange: this.handleChange, 
-          value: (this.state.dmg === 0) ? "" : this.state.dmg}
-        ), 
-        React.createElement(ButtonGroup, {justified: true, className: (this.props.curr.hp === 0 || this.state.show === false)? "hide" : ""}, 
-          React.createElement(ButtonGroup, null, 
-            React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsStyle: "default", onClick: this.handleDamage}, 
-              "Damage"
-            )
-          ), 
-          React.createElement(ButtonGroup, null, 
-            React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsStyle: "default", onClick: this.handleHeal}, 
-              "Heal"
-            )
-          ), 
-          React.createElement(ButtonGroup, null, 
-            React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsSTyle: "default", onClick: this.handleDelay}, 
-              "Delay Turn"
-            )
-          )
-        ), 
-        React.createElement(Button, {bsSize: "xsmall", className: "options center-block" + ((this.props.curr.hp === 0) ? " hide" : ""), onClick: this.show}, React.createElement(Glyphicon, {glyph: (this.state.show === false) ? "chevron-down" : "chevron-up"}))
-      )
-    );
-  }
-});
+    Player = require('./player'),
+    App;
 
 App = React.createClass({displayName: 'App',
   getInitialState : function() {
@@ -315,7 +228,7 @@ App = React.createClass({displayName: 'App',
 
 React.render(React.createElement(App, null), document.body);
 
-},{"./header":1,"react":172,"react-bootstrap/Button":5,"react-bootstrap/ButtonGroup":6,"react-bootstrap/Glyphicon":8,"react-bootstrap/Input":9,"react-bootstrap/Label":11,"react-bootstrap/ListGroup":12,"react-bootstrap/ListGroupItem":13,"react-bootstrap/ProgressBar":17}],3:[function(require,module,exports){
+},{"./header":1,"./player":173,"react":172,"react-bootstrap/ListGroup":12}],3:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -20537,4 +20450,97 @@ module.exports = warning;
 },{"./emptyFunction":133,"_process":3}],172:[function(require,module,exports){
 module.exports = require('./lib/React');
 
-},{"./lib/React":54}]},{},[2]);
+},{"./lib/React":54}],173:[function(require,module,exports){
+var React = require('react'),
+    ListGroupItem = require('react-bootstrap/ListGroupItem'),
+    Input = require('react-bootstrap/Input'),
+    ProgressBar = require('react-bootstrap/ProgressBar'),
+    Label = require('react-bootstrap/Label'),
+    Glyphicon = require('react-bootstrap/Glyphicon'),
+    Button = require('react-bootstrap/Button'),
+    ButtonGroup = require('react-bootstrap/ButtonGroup');
+
+
+Player = React.createClass({displayName: 'Player',
+  getInitialState : function() {
+    return ({ dmg : 0, show : false });
+  },
+  handleChange : function(e) {
+    this.setState({ dmg : (parseInt(e.target.value, 10) || 0 )});
+  },
+  handleDamage : function() {
+    //this.props.onDmgAdd(this.state.dmg);
+    this.props.curr.dmg += this.state.dmg;
+    this.setState({ dmg : 0 });
+
+    if (this.props.curr.dmg >= this.props.curr.hp) {
+      this.props.curr.dead = true;
+    }
+
+    this.props.onDmgAdd({ player : this.props.curr, idx : this.props.idx });
+  },
+  handleDelay : function() {
+    alert("TRIGGER!");
+  },
+  handleHeal : function() {
+    this.props.curr.dmg -= this.state.dmg;
+    this.setState({ dmg : 0 });
+    this.props.curr.dmg = (this.props.curr.dmg < 0) ? 0 : this.props.curr.dmg;
+    this.props.onDmgAdd({ player: this.props.curr, idx : this.props.idx });
+  },
+  show : function() {
+    this.setState({ show : !this.state.show });
+  },
+  render : function() {
+    var hpStyle, hpPercent;
+
+    if ((this.props.curr.hp - this.props.curr.dmg) <= Math.floor(this.props.curr.hp / 4)) {
+      hpStyle = "danger";
+    }
+    else if ((this.props.curr.hp - this.props.curr.dmg) <= Math.floor(this.props.curr.hp / 2)) {
+      hpStyle = "warning";
+    }
+    else {
+      hpStyle ="success";
+    }
+
+    hpPercent = (this.props.curr.hp - this.props.curr.dmg <= 0) ? 0 : Math.floor(((this.props.curr.hp - this.props.curr.dmg) / this.props.curr.hp)* 100);
+
+    return (
+      React.createElement(ListGroupItem, {bsStyle: (this.props.curr.active) ? "success" : null, disabled: (this.props.curr.dead) ? true : false}, 
+        React.createElement("h3", null, this.props.curr.name, " ", React.createElement("small", null, "@ ", this.props.curr.initiative, " initiative ", React.createElement(Label, {bsStyle: "warning"}, ((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0 && !this.props.curr.dead) ? "bloodied" : ""), " ", React.createElement(Label, {bsStyle: "danger"}, (this.props.curr.dead) ? "dead" : "")), " "), 
+        React.createElement(ProgressBar, {className: (this.props.curr.hp === 0) ? "hide" : "", bsStyle: hpStyle, label: (this.props.curr.hp - this.props.curr.dmg) + " / " + this.props.curr.hp, now: hpPercent}), 
+        React.createElement(Input, {
+          disabled: (this.props.curr.dead) ? true : false, 
+          className: (this.props.curr.hp === 0 || this.state.show === false) ? "hide" : "", 
+          type: "text", 
+          placeholder: "damage taken / healed", 
+          addonBefore: (this.props.curr.hp === 0 || this.state.show === false) ? "" : (this.props.curr.hp - this.props.curr.dmg) +  " / " + this.props.curr.hp, 
+          onChange: this.handleChange, 
+          value: (this.state.dmg === 0) ? "" : this.state.dmg}
+        ), 
+        React.createElement(ButtonGroup, {justified: true, className: (this.props.curr.hp === 0 || this.state.show === false)? "hide" : ""}, 
+          React.createElement(ButtonGroup, null, 
+            React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsStyle: "default", onClick: this.handleDamage}, 
+              "Damage"
+            )
+          ), 
+          React.createElement(ButtonGroup, null, 
+            React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsStyle: "default", onClick: this.handleHeal}, 
+              "Heal"
+            )
+          ), 
+          React.createElement(ButtonGroup, null, 
+            React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsSTyle: "default", onClick: this.handleDelay}, 
+              "Delay Turn"
+            )
+          )
+        ), 
+        React.createElement(Button, {bsSize: "xsmall", className: "options center-block" + ((this.props.curr.hp === 0) ? " hide" : ""), onClick: this.show}, React.createElement(Glyphicon, {glyph: (this.state.show === false) ? "chevron-down" : "chevron-up"}))
+      )
+    );
+  }
+});
+
+module.exports = Player;
+},{"react":172,"react-bootstrap/Button":5,"react-bootstrap/ButtonGroup":6,"react-bootstrap/Glyphicon":8,"react-bootstrap/Input":9,"react-bootstrap/Label":11,"react-bootstrap/ListGroupItem":13,"react-bootstrap/ProgressBar":17}]},{},[2]);
