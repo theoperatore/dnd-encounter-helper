@@ -71,7 +71,7 @@ Player = React.createClass({
     }
 
     return (
-      <Modal title="Trigger! Return to initiative order" onRequestHide={this.handleToggle}>
+      <Modal title="Trigger!" onRequestHide={this.handleToggle}>
         <div className="modal-body">
           <Input type="select" label="Come after which player?" onChange={this.handlePlayerSelect} defaultValue="0">
             {players}
