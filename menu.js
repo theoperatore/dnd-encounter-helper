@@ -39,7 +39,7 @@ var Add = React.createClass({
   },
   render : function() {
     return (
-        <Modal {...this.props} title="Add to Initiative" >
+        <Modal {...this.props} title="Add to Initiative Order" >
           <div className="modal-body">
             <Input 
               value={this.state.nameValue}
@@ -73,8 +73,8 @@ var Add = React.createClass({
 });
 
 
-var Header = React.createClass({
-  displayName: 'Header',
+var Menu = React.createClass({
+  displayName: 'Menu',
   getInitialState : function() {
     return ({ activated : false });
   },
@@ -116,4 +116,4 @@ var Header = React.createClass({
   }
 });
 
-module.exports = Header;
+module.exports = Menu;

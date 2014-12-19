@@ -1,128 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/** @jsx React.DOM */
-var React = require('react'),
-    ButtonGroup = require('react-bootstrap/ButtonGroup'),
-    Button = require('react-bootstrap/Button'),
-    Modal = require('react-bootstrap/Modal'),
-    ModalTrigger = require('react-bootstrap/ModalTrigger'),
-    Input = require('react-bootstrap/Input');
-
-var Add = React.createClass({displayName: 'Add',
-  getInitialState : function() {
-    return (
-      { 
-        nameValue : "",
-        initValue : 0,
-        hpValue : 0
-      }
-    );
-  },
-  handleNameChange : function(e) {
-    this.setState({ nameValue : e.target.value });
-  },
-  handleInitChange : function(e) {
-    this.setState({ initValue: e.target.value });
-  },
-  handleHpChange : function(e) {
-    this.setState({ hpValue : e.target.value });
-  },
-  onAdd : function() {
-
-    // let parent know about change
-    this.props.onAdd({
-      name : this.state.nameValue,
-      initiative : parseInt(this.state.initValue, 10) || 0,
-      hp : this.state.hpValue
-    });
-
-    // close this modal
-    this.props.onRequestHide();
-  },
-  render : function() {
-    return (
-        React.createElement(Modal, React.__spread({},  this.props, {title: "Add to Initiative"}), 
-          React.createElement("div", {className: "modal-body"}, 
-            React.createElement(Input, {
-              value: this.state.nameValue, 
-              addonBefore: "Name", 
-              type: "text", 
-              onChange: this.handleNameChange}
-            ), 
-
-            React.createElement(Input, {
-              value: (this.state.initValue === 0)?"":this.state.initValue, 
-              addonBefore: "Init", 
-              type: "text", 
-              onChange: this.handleInitChange}
-            ), 
-
-            React.createElement(Input, {
-              value: (this.state.hpValue === 0)?"":this.state.hpValue, 
-              addonBefore: "HP ", 
-              type: "text", 
-              onChange: this.handleHpChange}
-            )
-
-          ), 
-          React.createElement("div", {className: "modal-footer"}, 
-            React.createElement(Button, {onClick: this.props.onRequestHide}, "Cancel"), 
-            React.createElement(Button, {onClick: this.onAdd, bsStyle: "primary"}, "Add")
-          )
-        )
-    );
-  }
-});
-
-
-var Header = React.createClass({
-  displayName: 'Header',
-  getInitialState : function() {
-    return ({ activated : false });
-  },
-  handleAdd : function(data) {
-    //console.log("got data", data);
-
-    // pass up data to content
-    this.props.onAdd(data);
-  },
-  handleStart : function(e) {
-    if (!this.state.activated) {
-      this.setState({ activated : true });
-      this.props.start();
-    }
-    else {
-      this.props.next();
-    }
-  },
-  handleClear : function() {
-    this.setState({ activated : false });
-    this.props.onClear();
-  },
-  render: function () {
-    return (
-      React.createElement(ButtonGroup, {className: "fixed", justified: true}, 
-        React.createElement(ModalTrigger, {modal: React.createElement(Add, {onAdd: this.handleAdd})}, 
-          React.createElement(ButtonGroup, null, 
-            React.createElement(Button, {bsSize: "large", bsStyle: "primary"}, "Add")
-          )
-        ), 
-        React.createElement(ButtonGroup, null, 
-          React.createElement(Button, {onClick: this.handleStart, disabled: (this.props.num !== 0) ? false : true, bsSize: "large", bsStyle: "success"}, (this.state.activated) ? "Next" : "Start")
-        ), 
-        React.createElement(ButtonGroup, null, 
-          React.createElement(Button, {onClick: this.handleClear, disabled: (this.props.num !== 0) ? false : true, bsSize: "large", bsStyle: "danger"}, "Clear")
-        )
-      )
-    );
-  }
-});
-
-module.exports = Header;
-},{"react":172,"react-bootstrap/Button":5,"react-bootstrap/ButtonGroup":6,"react-bootstrap/Input":9,"react-bootstrap/Modal":14,"react-bootstrap/ModalTrigger":15}],2:[function(require,module,exports){
 /** @jsx React.dom */
 var React = require('react'),
     ListGroup = require('react-bootstrap/ListGroup'),
-    Header = require('./header'),
+    Menu = require('./menu'),
     Player = require('./player'),
     App;
 
@@ -185,7 +65,7 @@ App = React.createClass({displayName: 'App',
     var next = (this.state.active_idx + 1) % this.state.players.length,
         tmp = this.state.players;
 
-    while (tmp[next].dead === true || tmp[next].delayed === true) {
+    while (tmp[next] && (tmp[next].dead === true || tmp[next].delayed === true)) {
       next++;
     }
 
@@ -204,18 +84,42 @@ App = React.createClass({displayName: 'App',
     localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
     localStorage.setItem("__dnd_companion_encounter_helper_idx", JSON.stringify(this.state.active_idx));
   },
+  handleDelay : function(data) {
+    var tmp = this.state.players;
+
+    if (data.delayedToIndex) {
+
+      console.log("adding", data.player.name, "to index", data.delayedToIndex);
+
+      // take player out of array
+      tmp.splice(data.idx, 1);
+
+      // add player at specific index
+      tmp.splice(data.delayedToIndex, 0, data.player);
+
+      // save new sorting
+      this.setState({ players: tmp });
+      localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
+    }
+    else {
+      tmp[data.idx] = data.player;
+      this.setState({ players: tmp });
+      localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
+    }
+
+  },
   render : function() {
     var players = [];
 
     for (var i = 0, curr; i < this.state.players.length; i++) {
       curr = this.state.players[i];
       
-      players.push(React.createElement(Player, {key: i, idx: i, curr: curr, onDmgAdd: this.handleDmgAdd}));
+      players.push(React.createElement(Player, {key: i, idx: i, curr: curr, players: this.state.players, onDelay: this.handleDelay, onDmgAdd: this.handleDmgAdd}));
     }
 
     return (
       React.createElement("div", null, 
-        React.createElement(Header, {start: this.start, next: this.next, num: this.state.players.length, onAdd: this.handleAdd, onClear: this.handleClear}), 
+        React.createElement(Menu, {start: this.start, next: this.next, num: this.state.players.length, onAdd: this.handleAdd, onClear: this.handleClear}), 
         React.createElement(ListGroup, null, 
           players
         ), 
@@ -228,7 +132,127 @@ App = React.createClass({displayName: 'App',
 
 React.render(React.createElement(App, null), document.body);
 
-},{"./header":1,"./player":173,"react":172,"react-bootstrap/ListGroup":12}],3:[function(require,module,exports){
+},{"./menu":2,"./player":173,"react":172,"react-bootstrap/ListGroup":12}],2:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react'),
+    ButtonGroup = require('react-bootstrap/ButtonGroup'),
+    Button = require('react-bootstrap/Button'),
+    Modal = require('react-bootstrap/Modal'),
+    ModalTrigger = require('react-bootstrap/ModalTrigger'),
+    Input = require('react-bootstrap/Input');
+
+var Add = React.createClass({displayName: 'Add',
+  getInitialState : function() {
+    return (
+      { 
+        nameValue : "",
+        initValue : 0,
+        hpValue : 0
+      }
+    );
+  },
+  handleNameChange : function(e) {
+    this.setState({ nameValue : e.target.value });
+  },
+  handleInitChange : function(e) {
+    this.setState({ initValue: e.target.value });
+  },
+  handleHpChange : function(e) {
+    this.setState({ hpValue : e.target.value });
+  },
+  onAdd : function() {
+
+    // let parent know about change
+    this.props.onAdd({
+      name : this.state.nameValue,
+      initiative : parseInt(this.state.initValue, 10) || 0,
+      hp : this.state.hpValue
+    });
+
+    // close this modal
+    this.props.onRequestHide();
+  },
+  render : function() {
+    return (
+        React.createElement(Modal, React.__spread({},  this.props, {title: "Add to Initiative Order"}), 
+          React.createElement("div", {className: "modal-body"}, 
+            React.createElement(Input, {
+              value: this.state.nameValue, 
+              addonBefore: "Name", 
+              type: "text", 
+              onChange: this.handleNameChange}
+            ), 
+
+            React.createElement(Input, {
+              value: (this.state.initValue === 0)?"":this.state.initValue, 
+              addonBefore: "Init", 
+              type: "text", 
+              onChange: this.handleInitChange}
+            ), 
+
+            React.createElement(Input, {
+              value: (this.state.hpValue === 0)?"":this.state.hpValue, 
+              addonBefore: "HP ", 
+              type: "text", 
+              onChange: this.handleHpChange}
+            )
+
+          ), 
+          React.createElement("div", {className: "modal-footer"}, 
+            React.createElement(Button, {onClick: this.props.onRequestHide}, "Cancel"), 
+            React.createElement(Button, {onClick: this.onAdd, bsStyle: "primary"}, "Add")
+          )
+        )
+    );
+  }
+});
+
+
+var Menu = React.createClass({
+  displayName: 'Menu',
+  getInitialState : function() {
+    return ({ activated : false });
+  },
+  handleAdd : function(data) {
+    //console.log("got data", data);
+
+    // pass up data to content
+    this.props.onAdd(data);
+  },
+  handleStart : function(e) {
+    if (!this.state.activated) {
+      this.setState({ activated : true });
+      this.props.start();
+    }
+    else {
+      this.props.next();
+    }
+  },
+  handleClear : function() {
+    this.setState({ activated : false });
+    this.props.onClear();
+  },
+  render: function () {
+    return (
+      React.createElement(ButtonGroup, {className: "fixed", justified: true}, 
+        React.createElement(ModalTrigger, {modal: React.createElement(Add, {onAdd: this.handleAdd})}, 
+          React.createElement(ButtonGroup, null, 
+            React.createElement(Button, {bsSize: "large", bsStyle: "primary"}, "Add")
+          )
+        ), 
+        React.createElement(ButtonGroup, null, 
+          React.createElement(Button, {onClick: this.handleStart, disabled: (this.props.num !== 0) ? false : true, bsSize: "large", bsStyle: "success"}, (this.state.activated) ? "Next" : "Start")
+        ), 
+        React.createElement(ButtonGroup, null, 
+          React.createElement(Button, {onClick: this.handleClear, disabled: (this.props.num !== 0) ? false : true, bsSize: "large", bsStyle: "danger"}, "Clear")
+        )
+      )
+    );
+  }
+});
+
+module.exports = Menu;
+},{"react":172,"react-bootstrap/Button":5,"react-bootstrap/ButtonGroup":6,"react-bootstrap/Input":9,"react-bootstrap/Modal":14,"react-bootstrap/ModalTrigger":15}],3:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -20458,18 +20482,23 @@ var React = require('react'),
     Label = require('react-bootstrap/Label'),
     Glyphicon = require('react-bootstrap/Glyphicon'),
     Button = require('react-bootstrap/Button'),
-    ButtonGroup = require('react-bootstrap/ButtonGroup');
+    ButtonGroup = require('react-bootstrap/ButtonGroup'),
+    Modal = require('react-bootstrap/Modal'),
+    OverlayMixin = require('react-bootstrap/OverlayMixin');
 
 
 Player = React.createClass({displayName: 'Player',
+  mixins: [OverlayMixin],
   getInitialState : function() {
-    return ({ dmg : 0, show : false });
+    return ({ dmg : 0, show : false, isModalOpen : false, delayedAfterIdx : 0 });
+  },
+  handleToggle : function() {
+    this.setState({ isModalOpen : !this.state.isModalOpen });
   },
   handleChange : function(e) {
     this.setState({ dmg : (parseInt(e.target.value, 10) || 0 )});
   },
   handleDamage : function() {
-    //this.props.onDmgAdd(this.state.dmg);
     this.props.curr.dmg += this.state.dmg;
     this.setState({ dmg : 0 });
 
@@ -20480,7 +20509,24 @@ Player = React.createClass({displayName: 'Player',
     this.props.onDmgAdd({ player : this.props.curr, idx : this.props.idx });
   },
   handleDelay : function() {
-    alert("TRIGGER!");
+    if (this.props.curr.delayed) {
+      this.handleToggle();
+    }
+    else {
+      this.props.curr.delayed = true;
+      this.props.onDelay({ player : this.props.curr, idx : this.props.idx });
+      this.setState({ show : !this.state.show });
+    }
+  },
+  handleDelayResolved : function() {
+    this.props.curr.delayed = false;
+    console.log("selected index", this.state.delayedAfterIdx);
+    this.props.onDelay({ player: this.props.curr, idx : this.props.idx, delayedToIndex : this.state.delayedAfterIdx});
+    this.handleToggle();
+    this.setState({ show : !this.state.show });
+  },
+  handlePlayerSelect : function(e) {
+    this.setState({ delayedAfterIdx : e.target.value });
   },
   handleHeal : function() {
     this.props.curr.dmg -= this.state.dmg;
@@ -20490,6 +20536,31 @@ Player = React.createClass({displayName: 'Player',
   },
   show : function() {
     this.setState({ show : !this.state.show });
+  },
+  renderOverlay : function() {
+
+    if (!this.state.isModalOpen) {
+      return React.createElement("span", null);
+    }
+
+    var players = [];
+    for (var i = 0; i < this.props.players.length; i++) {
+      players.push(React.createElement("option", {key: i, value: i}, this.props.players[i].name));
+    }
+
+    return (
+      React.createElement(Modal, {title: "Trigger! Return to initiative order", onRequestHide: this.handleToggle}, 
+        React.createElement("div", {className: "modal-body"}, 
+          React.createElement(Input, {type: "select", label: "Come after which player?", onChange: this.handlePlayerSelect, defaultValue: "0"}, 
+            players
+          )
+        ), 
+        React.createElement("div", {className: "modal-footer"}, 
+          React.createElement(Button, {onClick: this.handleToggle}, "Close"), 
+          React.createElement(Button, {bsStyle: "success", onClick: this.handleDelayResolved}, "Ok")
+        )
+      )
+    );
   },
   render : function() {
     var hpStyle, hpPercent;
@@ -20506,41 +20577,47 @@ Player = React.createClass({displayName: 'Player',
 
     hpPercent = (this.props.curr.hp - this.props.curr.dmg <= 0) ? 0 : Math.floor(((this.props.curr.hp - this.props.curr.dmg) / this.props.curr.hp)* 100);
 
+    var style = null;
+    if (this.props.curr.active) {
+      style = "success";
+    }
+    else if (this.props.curr.delayed) {
+      style="info";
+    }
+
+    var before = (this.props.curr.hp === 0 || this.state.show === false) ? "" : React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, onClick: this.handleDamage}, "Dmg");
+    var after = (this.props.curr.hp === 0 || this.state.show === false) ? "" : React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, onClick: this.handleHeal}, "Heal");
+
     return (
-      React.createElement(ListGroupItem, {bsStyle: (this.props.curr.active) ? "success" : null, disabled: (this.props.curr.dead) ? true : false}, 
-        React.createElement("h3", null, this.props.curr.name, " ", React.createElement("small", null, "@ ", this.props.curr.initiative, " initiative ", React.createElement(Label, {bsStyle: "warning"}, ((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0 && !this.props.curr.dead) ? "bloodied" : ""), " ", React.createElement(Label, {bsStyle: "danger"}, (this.props.curr.dead) ? "dead" : "")), " "), 
-        React.createElement(ProgressBar, {className: (this.props.curr.hp === 0) ? "hide" : "", bsStyle: hpStyle, label: (this.props.curr.hp - this.props.curr.dmg) + " / " + this.props.curr.hp, now: hpPercent}), 
+      
+      React.createElement(ListGroupItem, {bsStyle: style, disabled: (this.props.curr.dead) ? true : false}, 
+        React.createElement("a", {className: "toggle", href: "#?", onClick: this.show}, 
+        React.createElement("h3", null, this.props.curr.name, " ", React.createElement("small", null, "@ ", this.props.curr.initiative, " initiative ", React.createElement(Label, {bsStyle: "warning"}, ((this.props.curr.dmg >= Math.floor(this.props.curr.hp / 2)) && this.props.curr.hp !== 0 && !this.props.curr.dead) ? "bloodied" : ""), " ", React.createElement(Label, {bsStyle: "danger"}, (this.props.curr.dead) ? "dead" : ""), " ", React.createElement(Label, {bsStyle: "info"}, (this.props.curr.delayed) ? "delayed" : "")), " "), 
+        React.createElement(ProgressBar, {className: (this.props.curr.hp === 0) ? "hide" : "", bsStyle: hpStyle, label: (this.props.curr.hp - this.props.curr.dmg) + " / " + this.props.curr.hp, now: hpPercent})
+        ), 
         React.createElement(Input, {
           disabled: (this.props.curr.dead) ? true : false, 
           className: (this.props.curr.hp === 0 || this.state.show === false) ? "hide" : "", 
           type: "text", 
           placeholder: "damage taken / healed", 
-          addonBefore: (this.props.curr.hp === 0 || this.state.show === false) ? "" : (this.props.curr.hp - this.props.curr.dmg) +  " / " + this.props.curr.hp, 
+          buttonBefore: before, 
+          buttonAfter: after, 
           onChange: this.handleChange, 
           value: (this.state.dmg === 0) ? "" : this.state.dmg}
         ), 
-        React.createElement(ButtonGroup, {justified: true, className: (this.props.curr.hp === 0 || this.state.show === false)? "hide" : ""}, 
-          React.createElement(ButtonGroup, null, 
-            React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsStyle: "default", onClick: this.handleDamage}, 
-              "Damage"
-            )
-          ), 
-          React.createElement(ButtonGroup, null, 
-            React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsStyle: "default", onClick: this.handleHeal}, 
-              "Heal"
-            )
-          ), 
-          React.createElement(ButtonGroup, null, 
-            React.createElement(Button, {disabled: (this.props.curr.dead) ? true : false, bsSTyle: "default", onClick: this.handleDelay}, 
-              "Delay Turn"
-            )
-          )
-        ), 
-        React.createElement(Button, {bsSize: "xsmall", className: "options center-block" + ((this.props.curr.hp === 0) ? " hide" : ""), onClick: this.show}, React.createElement(Glyphicon, {glyph: (this.state.show === false) ? "chevron-down" : "chevron-up"}))
+          
+        React.createElement(Button, {
+          disabled: (this.props.curr.dead) ? true : false, 
+          bsSTyle: "default", 
+          onClick: this.handleDelay, 
+          className: (this.state.show === false) ? "hide" : ""
+        }, 
+          (this.props.curr.delayed) ? "Trigger!" : "Delay Turn"
+        )
       )
     );
   }
 });
 
 module.exports = Player;
-},{"react":172,"react-bootstrap/Button":5,"react-bootstrap/ButtonGroup":6,"react-bootstrap/Glyphicon":8,"react-bootstrap/Input":9,"react-bootstrap/Label":11,"react-bootstrap/ListGroupItem":13,"react-bootstrap/ProgressBar":17}]},{},[2]);
+},{"react":172,"react-bootstrap/Button":5,"react-bootstrap/ButtonGroup":6,"react-bootstrap/Glyphicon":8,"react-bootstrap/Input":9,"react-bootstrap/Label":11,"react-bootstrap/ListGroupItem":13,"react-bootstrap/Modal":14,"react-bootstrap/OverlayMixin":16,"react-bootstrap/ProgressBar":17}]},{},[1]);

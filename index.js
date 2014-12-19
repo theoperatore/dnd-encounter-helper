@@ -1,7 +1,7 @@
 /** @jsx React.dom */
 var React = require('react'),
     ListGroup = require('react-bootstrap/ListGroup'),
-    Header = require('./header'),
+    Menu = require('./menu'),
     Player = require('./player'),
     App;
 
@@ -64,7 +64,7 @@ App = React.createClass({
     var next = (this.state.active_idx + 1) % this.state.players.length,
         tmp = this.state.players;
 
-    while (tmp[next].dead === true || tmp[next].delayed === true) {
+    while (tmp[next] && (tmp[next].dead === true || tmp[next].delayed === true)) {
       next++;
     }
 
@@ -83,18 +83,34 @@ App = React.createClass({
     localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
     localStorage.setItem("__dnd_companion_encounter_helper_idx", JSON.stringify(this.state.active_idx));
   },
+  handleDelay : function(data) {
+    var tmp = this.state.players;
+
+    if (data.delayedToIndex) {
+      tmp.splice(data.idx, 1);
+      tmp.splice(data.delayedToIndex, 0, data.player);
+      this.setState({ players: tmp });
+      localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
+    }
+    else {
+      tmp[data.idx] = data.player;
+      this.setState({ players: tmp });
+      localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
+    }
+
+  },
   render : function() {
     var players = [];
 
     for (var i = 0, curr; i < this.state.players.length; i++) {
       curr = this.state.players[i];
       
-      players.push(<Player key={i} idx={i} curr={curr} onDmgAdd={this.handleDmgAdd} />);
+      players.push(<Player key={i} idx={i} curr={curr} players={this.state.players} onDelay={this.handleDelay} onDmgAdd={this.handleDmgAdd} />);
     }
 
     return (
       <div>
-        <Header start={this.start} next={this.next} num={this.state.players.length} onAdd={this.handleAdd} onClear={this.handleClear} />
+        <Menu start={this.start} next={this.next} num={this.state.players.length} onAdd={this.handleAdd} onClear={this.handleClear} />
         <ListGroup>
           {players}
         </ListGroup>
