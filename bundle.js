@@ -88,16 +88,8 @@ App = React.createClass({displayName: 'App',
     var tmp = this.state.players;
 
     if (data.delayedToIndex) {
-
-      console.log("adding", data.player.name, "to index", data.delayedToIndex);
-
-      // take player out of array
       tmp.splice(data.idx, 1);
-
-      // add player at specific index
       tmp.splice(data.delayedToIndex, 0, data.player);
-
-      // save new sorting
       this.setState({ players: tmp });
       localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
     }
@@ -20520,7 +20512,6 @@ Player = React.createClass({displayName: 'Player',
   },
   handleDelayResolved : function() {
     this.props.curr.delayed = false;
-    console.log("selected index", this.state.delayedAfterIdx);
     this.props.onDelay({ player: this.props.curr, idx : this.props.idx, delayedToIndex : this.state.delayedAfterIdx});
     this.handleToggle();
     this.setState({ show : !this.state.show });
@@ -20549,7 +20540,7 @@ Player = React.createClass({displayName: 'Player',
     }
 
     return (
-      React.createElement(Modal, {title: "Trigger! Return to initiative order", onRequestHide: this.handleToggle}, 
+      React.createElement(Modal, {title: "Trigger!", onRequestHide: this.handleToggle}, 
         React.createElement("div", {className: "modal-body"}, 
           React.createElement(Input, {type: "select", label: "Come after which player?", onChange: this.handlePlayerSelect, defaultValue: "0"}, 
             players
