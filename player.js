@@ -13,7 +13,7 @@ var React = require('react'),
 Player = React.createClass({
   mixins: [OverlayMixin],
   getInitialState : function() {
-    return ({ dmg : 0, show : false, isModalOpen : false, delayedAfterIdx : 0 });
+    return ({ dmg : 0, show : false, isModalOpen : false, delayedAfterIdx : -1 });
   },
   handleToggle : function() {
     this.setState({ isModalOpen : !this.state.isModalOpen });
@@ -42,13 +42,21 @@ Player = React.createClass({
     }
   },
   handleDelayResolved : function() {
+    if (this.state.delayedAfterIdx === -1) {
+      alert("Select a Player!");
+      return;
+    }
+
     this.props.curr.delayed = false;
-    this.props.onDelay({ player: this.props.curr, idx : this.props.idx, delayedToIndex : this.state.delayedAfterIdx});
+    this.props.onDelay({ player: this.props.curr, idx : this.props.idx, delayedToIndex : this.state.delayedAfterIdx, resolveDelay : true });
     this.handleToggle();
     this.setState({ show : !this.state.show });
   },
   handlePlayerSelect : function(e) {
-    this.setState({ delayedAfterIdx : e.target.value });
+    var val = e.target.value;
+    val = parseInt(val, 10);
+    val = (isNaN(val)) ? -1 : val;
+    this.setState({ delayedAfterIdx : val });
   },
   handleHeal : function() {
     this.props.curr.dmg -= this.state.dmg;
@@ -73,7 +81,8 @@ Player = React.createClass({
     return (
       <Modal title="Trigger!" onRequestHide={this.handleToggle}>
         <div className="modal-body">
-          <Input type="select" label="Come after which player?" onChange={this.handlePlayerSelect} defaultValue="0">
+          <Input type="select" label="Which spot to put this character?" onChange={this.handlePlayerSelect}>
+            <option value="choice">Select a Player</option>
             {players}
           </Input>
         </div>

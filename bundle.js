@@ -3,23 +3,30 @@
 var React = require('react'),
     ListGroup = require('react-bootstrap/ListGroup'),
     Menu = require('./menu'),
-    Player = require('./player'),
-    App;
+    Player = require('./player');
 
-App = React.createClass({displayName: 'App',
+var App = React.createClass({displayName: 'App',
   getInitialState : function() {
-    var local = JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_players")) || [],
-        turn_idx = parseInt(JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_idx")),10) || 0
+    var local = JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_players")) || [];
     return (
       { 
         players : local,
-        active_idx : turn_idx
+        activated : false
       }
     );
   },
+  componentWillMount: function () {
+    var tmp = this.state.players.slice();
+
+    for (var i = 0; i < tmp.length; i++) {
+      if (tmp[i].active) {
+        this.setState({ activated : true });
+        break;
+      }
+    }
+  },
   handleAdd : function(data) {
-    console.log("adding", data);
-    var tmp = this.state.players;
+    var tmp = this.state.players.slice();
 
     tmp.push(
       { 
@@ -46,35 +53,66 @@ App = React.createClass({displayName: 'App',
   handleClear : function() {
     console.log("clearing all");
     localStorage.removeItem("__dnd_companion_encounter_helper_players");
-    localStorage.removeItem("__dnd_companion_encounter_helper_idx");
-    this.setState({ players : [], active_idx : 0 });
+    this.setState({ players : [] });
   },
   start : function() {
-    var tmp = this.state.players,
-        idx = this.state.active_idx;
+    var tmp = this.state.players.slice(),
+        idx = 0;
 
-    while(tmp[idx].dead === true || tmp[idx].delayed === true) {
-      idx++;
+    for (var i = 0; i < tmp.length; i++) {
+      if (tmp[i].active) {
+        idx = i;
+        break;
+      }
     }
 
-    console.log("indexes", this.state.active_idx, idx);
     tmp[idx].active = true;
-    this.setState({ players : tmp, active_idx : idx });
+    this.setState({ players : tmp, activated : true });
   },
   next : function() {
-    var next = (this.state.active_idx + 1) % this.state.players.length,
-        tmp = this.state.players;
+    var curr = 0;
+    var next = 1;
+    var tmp = this.state.players;
 
-    while (tmp[next] && (tmp[next].dead === true || tmp[next].delayed === true)) {
-      next++;
+    for (var i = 0; i < tmp.length; i++) {
+      if (tmp[i].active) {
+        curr = i;
+        break;
+      }
     }
 
-    tmp[this.state.active_idx].active = false;
+    next = (curr + 1) % tmp.length;
+    while (tmp[next] && (tmp[next].dead || tmp[next].delayed)) {
+
+      // prevent an infinite loop; break if we've gone around the horn
+      if (next === curr) break;
+
+      // search for the next character
+      next = ((next + 1) % tmp.length);
+    }
+
+    tmp[curr].active = false;
     tmp[next].active = true;
 
-    this.setState({ players : tmp, active_idx : next });
+    this.setState({ players : tmp });
     localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
-    localStorage.setItem("__dnd_companion_encounter_helper_idx", JSON.stringify(next));
+  },
+  stop : function() {
+    var tmp = this.state.players;
+    var idx = -1;
+
+    for (var i = 0; i < tmp.length; i++) {
+      if (tmp[i].active) {
+        idx = i;
+        break;
+      }
+    }
+
+    if (idx === -1) return;
+
+    tmp[idx].active = false;
+    this.setState({ players : tmp, activated : false });
+    localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
   },
   handleDmgAdd : function(player) {
     var tmp = this.state.players;
@@ -82,12 +120,11 @@ App = React.createClass({displayName: 'App',
     tmp[player.idx] = player.player;
     this.setState({ players : tmp });
     localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
-    localStorage.setItem("__dnd_companion_encounter_helper_idx", JSON.stringify(this.state.active_idx));
   },
   handleDelay : function(data) {
     var tmp = this.state.players;
 
-    if (data.delayedToIndex) {
+    if (data.resolveDelay) {
       tmp.splice(data.idx, 1);
       tmp.splice(data.delayedToIndex, 0, data.player);
       this.setState({ players: tmp });
@@ -111,7 +148,7 @@ App = React.createClass({displayName: 'App',
 
     return (
       React.createElement("div", null, 
-        React.createElement(Menu, {start: this.start, next: this.next, num: this.state.players.length, onAdd: this.handleAdd, onClear: this.handleClear}), 
+        React.createElement(Menu, {start: this.start, next: this.next, num: this.state.players.length, activated: this.state.activated, onAdd: this.handleAdd, onStop: this.stop, onClear: this.handleClear}), 
         React.createElement(ListGroup, null, 
           players
         ), 
@@ -202,9 +239,6 @@ var Add = React.createClass({displayName: 'Add',
 
 var Menu = React.createClass({
   displayName: 'Menu',
-  getInitialState : function() {
-    return ({ activated : false });
-  },
   handleAdd : function(data) {
     //console.log("got data", data);
 
@@ -212,8 +246,7 @@ var Menu = React.createClass({
     this.props.onAdd(data);
   },
   handleStart : function(e) {
-    if (!this.state.activated) {
-      this.setState({ activated : true });
+    if (!this.props.activated) {
       this.props.start();
     }
     else {
@@ -221,8 +254,12 @@ var Menu = React.createClass({
     }
   },
   handleClear : function() {
-    this.setState({ activated : false });
-    this.props.onClear();
+    if (this.props.activated) {
+      this.props.onStop();
+    }
+    else {
+      this.props.onClear();
+    }
   },
   render: function () {
     return (
@@ -233,10 +270,10 @@ var Menu = React.createClass({
           )
         ), 
         React.createElement(ButtonGroup, null, 
-          React.createElement(Button, {onClick: this.handleStart, disabled: (this.props.num !== 0) ? false : true, bsSize: "large", bsStyle: "success"}, (this.state.activated) ? "Next" : "Start")
+          React.createElement(Button, {onClick: this.handleStart, disabled: (this.props.num !== 0) ? false : true, bsSize: "large", bsStyle: "success"}, (this.props.activated) ? "Next" : "Start")
         ), 
         React.createElement(ButtonGroup, null, 
-          React.createElement(Button, {onClick: this.handleClear, disabled: (this.props.num !== 0) ? false : true, bsSize: "large", bsStyle: "danger"}, "Clear")
+          React.createElement(Button, {onClick: this.handleClear, disabled: (this.props.num !== 0) ? false : true, bsSize: "large", bsStyle: "danger"}, (this.props.activated) ? "Stop" : "Clear")
         )
       )
     );
@@ -20482,7 +20519,7 @@ var React = require('react'),
 Player = React.createClass({displayName: 'Player',
   mixins: [OverlayMixin],
   getInitialState : function() {
-    return ({ dmg : 0, show : false, isModalOpen : false, delayedAfterIdx : 0 });
+    return ({ dmg : 0, show : false, isModalOpen : false, delayedAfterIdx : -1 });
   },
   handleToggle : function() {
     this.setState({ isModalOpen : !this.state.isModalOpen });
@@ -20511,13 +20548,21 @@ Player = React.createClass({displayName: 'Player',
     }
   },
   handleDelayResolved : function() {
+    if (this.state.delayedAfterIdx === -1) {
+      alert("Select a Player!");
+      return;
+    }
+
     this.props.curr.delayed = false;
-    this.props.onDelay({ player: this.props.curr, idx : this.props.idx, delayedToIndex : this.state.delayedAfterIdx});
+    this.props.onDelay({ player: this.props.curr, idx : this.props.idx, delayedToIndex : this.state.delayedAfterIdx, resolveDelay : true });
     this.handleToggle();
     this.setState({ show : !this.state.show });
   },
   handlePlayerSelect : function(e) {
-    this.setState({ delayedAfterIdx : e.target.value });
+    var val = e.target.value;
+    val = parseInt(val, 10);
+    val = (isNaN(val)) ? -1 : val;
+    this.setState({ delayedAfterIdx : val });
   },
   handleHeal : function() {
     this.props.curr.dmg -= this.state.dmg;
@@ -20542,7 +20587,8 @@ Player = React.createClass({displayName: 'Player',
     return (
       React.createElement(Modal, {title: "Trigger!", onRequestHide: this.handleToggle}, 
         React.createElement("div", {className: "modal-body"}, 
-          React.createElement(Input, {type: "select", label: "Come after which player?", onChange: this.handlePlayerSelect, defaultValue: "0"}, 
+          React.createElement(Input, {type: "select", label: "Which spot to put this character?", onChange: this.handlePlayerSelect}, 
+            React.createElement("option", {value: "choice"}, "Select a Player"), 
             players
           )
         ), 

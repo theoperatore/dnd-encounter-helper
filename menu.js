@@ -75,9 +75,6 @@ var Add = React.createClass({
 
 var Menu = React.createClass({
   displayName: 'Menu',
-  getInitialState : function() {
-    return ({ activated : false });
-  },
   handleAdd : function(data) {
     //console.log("got data", data);
 
@@ -85,8 +82,7 @@ var Menu = React.createClass({
     this.props.onAdd(data);
   },
   handleStart : function(e) {
-    if (!this.state.activated) {
-      this.setState({ activated : true });
+    if (!this.props.activated) {
       this.props.start();
     }
     else {
@@ -94,8 +90,12 @@ var Menu = React.createClass({
     }
   },
   handleClear : function() {
-    this.setState({ activated : false });
-    this.props.onClear();
+    if (this.props.activated) {
+      this.props.onStop();
+    }
+    else {
+      this.props.onClear();
+    }
   },
   render: function () {
     return (
@@ -106,10 +106,10 @@ var Menu = React.createClass({
           </ButtonGroup>
         </ModalTrigger>
         <ButtonGroup>
-          <Button onClick={this.handleStart} disabled={(this.props.num !== 0) ? false : true} bsSize="large" bsStyle="success">{(this.state.activated) ? "Next" : "Start" }</Button>
+          <Button onClick={this.handleStart} disabled={(this.props.num !== 0) ? false : true} bsSize="large" bsStyle="success">{(this.props.activated) ? "Next" : "Start" }</Button>
         </ButtonGroup>
         <ButtonGroup>
-          <Button onClick={this.handleClear} disabled={(this.props.num !== 0) ? false : true} bsSize="large" bsStyle="danger">Clear</Button>
+          <Button onClick={this.handleClear} disabled={(this.props.num !== 0) ? false : true} bsSize="large" bsStyle="danger">{(this.props.activated) ? "Stop" : "Clear"}</Button>
         </ButtonGroup>
       </ButtonGroup>
     );

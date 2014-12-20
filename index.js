@@ -2,23 +2,30 @@
 var React = require('react'),
     ListGroup = require('react-bootstrap/ListGroup'),
     Menu = require('./menu'),
-    Player = require('./player'),
-    App;
+    Player = require('./player');
 
-App = React.createClass({
+var App = React.createClass({
   getInitialState : function() {
-    var local = JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_players")) || [],
-        turn_idx = parseInt(JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_idx")),10) || 0
+    var local = JSON.parse(localStorage.getItem("__dnd_companion_encounter_helper_players")) || [];
     return (
       { 
         players : local,
-        active_idx : turn_idx
+        activated : false
       }
     );
   },
+  componentWillMount: function () {
+    var tmp = this.state.players.slice();
+
+    for (var i = 0; i < tmp.length; i++) {
+      if (tmp[i].active) {
+        this.setState({ activated : true });
+        break;
+      }
+    }
+  },
   handleAdd : function(data) {
-    console.log("adding", data);
-    var tmp = this.state.players;
+    var tmp = this.state.players.slice();
 
     tmp.push(
       { 
@@ -45,35 +52,66 @@ App = React.createClass({
   handleClear : function() {
     console.log("clearing all");
     localStorage.removeItem("__dnd_companion_encounter_helper_players");
-    localStorage.removeItem("__dnd_companion_encounter_helper_idx");
-    this.setState({ players : [], active_idx : 0 });
+    this.setState({ players : [] });
   },
   start : function() {
-    var tmp = this.state.players,
-        idx = this.state.active_idx;
+    var tmp = this.state.players.slice(),
+        idx = 0;
 
-    while(tmp[idx].dead === true || tmp[idx].delayed === true) {
-      idx++;
+    for (var i = 0; i < tmp.length; i++) {
+      if (tmp[i].active) {
+        idx = i;
+        break;
+      }
     }
 
-    console.log("indexes", this.state.active_idx, idx);
     tmp[idx].active = true;
-    this.setState({ players : tmp, active_idx : idx });
+    this.setState({ players : tmp, activated : true });
   },
   next : function() {
-    var next = (this.state.active_idx + 1) % this.state.players.length,
-        tmp = this.state.players;
+    var curr = 0;
+    var next = 1;
+    var tmp = this.state.players;
 
-    while (tmp[next] && (tmp[next].dead === true || tmp[next].delayed === true)) {
-      next++;
+    for (var i = 0; i < tmp.length; i++) {
+      if (tmp[i].active) {
+        curr = i;
+        break;
+      }
     }
 
-    tmp[this.state.active_idx].active = false;
+    next = (curr + 1) % tmp.length;
+    while (tmp[next] && (tmp[next].dead || tmp[next].delayed)) {
+
+      // prevent an infinite loop; break if we've gone around the horn
+      if (next === curr) break;
+
+      // search for the next character
+      next = ((next + 1) % tmp.length);
+    }
+
+    tmp[curr].active = false;
     tmp[next].active = true;
 
-    this.setState({ players : tmp, active_idx : next });
+    this.setState({ players : tmp });
     localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
-    localStorage.setItem("__dnd_companion_encounter_helper_idx", JSON.stringify(next));
+  },
+  stop : function() {
+    var tmp = this.state.players;
+    var idx = -1;
+
+    for (var i = 0; i < tmp.length; i++) {
+      if (tmp[i].active) {
+        idx = i;
+        break;
+      }
+    }
+
+    if (idx === -1) return;
+
+    tmp[idx].active = false;
+    this.setState({ players : tmp, activated : false });
+    localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
   },
   handleDmgAdd : function(player) {
     var tmp = this.state.players;
@@ -81,12 +119,11 @@ App = React.createClass({
     tmp[player.idx] = player.player;
     this.setState({ players : tmp });
     localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
-    localStorage.setItem("__dnd_companion_encounter_helper_idx", JSON.stringify(this.state.active_idx));
   },
   handleDelay : function(data) {
     var tmp = this.state.players;
 
-    if (data.delayedToIndex) {
+    if (data.resolveDelay) {
       tmp.splice(data.idx, 1);
       tmp.splice(data.delayedToIndex, 0, data.player);
       this.setState({ players: tmp });
@@ -110,7 +147,7 @@ App = React.createClass({
 
     return (
       <div>
-        <Menu start={this.start} next={this.next} num={this.state.players.length} onAdd={this.handleAdd} onClear={this.handleClear} />
+        <Menu start={this.start} next={this.next} num={this.state.players.length} activated={this.state.activated} onAdd={this.handleAdd} onStop={this.stop} onClear={this.handleClear} />
         <ListGroup>
           {players}
         </ListGroup>
