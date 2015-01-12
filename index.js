@@ -136,13 +136,23 @@ var App = React.createClass({
     }
 
   },
+  handleEdit : function(playerID, data) {
+    var tmp = this.state.players;
+
+    tmp[playerID].name = data.name || tmp[playerID].name;
+    tmp[playerID].hp = data.hp || tmp[playerID].hp;
+    tmp[playerID].initiative = data.init || tmp[playerID].initiative;
+
+    this.setState({ players : tmp});
+    localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
+  },
   render : function() {
     var players = [];
 
     for (var i = 0, curr; i < this.state.players.length; i++) {
       curr = this.state.players[i];
       
-      players.push(<Player key={i} idx={i} curr={curr} players={this.state.players} onDelay={this.handleDelay} onDmgAdd={this.handleDmgAdd} />);
+      players.push(<Player key={i} idx={i} curr={curr} players={this.state.players} onEdit={this.handleEdit} onDelay={this.handleDelay} onDmgAdd={this.handleDmgAdd} />);
     }
 
     return (

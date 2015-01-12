@@ -13,10 +13,22 @@ var React = require('react'),
 Player = React.createClass({
   mixins: [OverlayMixin],
   getInitialState : function() {
-    return ({ dmg : 0, show : false, isModalOpen : false, delayedAfterIdx : -1 });
+    return ({ 
+      dmg : 0,
+      show : false,
+      isModalOpen : false,
+      delayedAfterIdx : -1,
+      needsEdit : false,
+      name : "",
+      hp : "",
+      init : ""
+    });
   },
   handleToggle : function() {
     this.setState({ isModalOpen : !this.state.isModalOpen });
+  },
+  toggleEditMenu : function() {
+    this.setState({ needsEdit : !this.state.needsEdit });
   },
   handleChange : function(e) {
     this.setState({ dmg : (parseInt(e.target.value, 10) || 0 )});
@@ -58,6 +70,32 @@ Player = React.createClass({
     val = (isNaN(val)) ? -1 : val;
     this.setState({ delayedAfterIdx : val });
   },
+  handleEditCharacter : function() {
+    console.log(this.state.name, this.state.hp, this.state.init);
+    var out = {};
+    out.name = this.state.name === "" ? null : this.state.name;
+    out.init = this.state.init === "" ? null : this.state.init;
+    out.hp = this.state.hp === "" ? null : this.state.hp;
+
+    this.props.onEdit(this.props.idx, out);
+    this.toggleEditMenu();
+    this.show();
+  },
+  handleChange : function(name, e) {
+    var out = {};
+    var val;
+
+    if (name !== "name") {
+      val = parseInt(e.target.value, 10);
+      if (isNaN(val)) return;
+      out[name] = val;
+      this.setState(out);
+    }
+    else {
+      out[name] = e.target.value;
+      this.setState(out);
+    }
+  },
   handleHeal : function() {
     this.props.curr.dmg -= this.state.dmg;
     this.setState({ dmg : 0 });
@@ -69,7 +107,7 @@ Player = React.createClass({
   },
   renderOverlay : function() {
 
-    if (!this.state.isModalOpen) {
+    if (!this.state.isModalOpen && !this.state.needsEdit) {
       return <span></span>;
     }
 
@@ -78,20 +116,39 @@ Player = React.createClass({
       players.push(<option key={i} value={i}>{this.props.players[i].name}</option>);
     }
 
-    return (
-      <Modal title="Trigger!" onRequestHide={this.handleToggle}>
-        <div className="modal-body">
-          <Input type="select" label="Which spot to put this character?" onChange={this.handlePlayerSelect}>
-            <option value="choice">Select a Player</option>
-            {players}
-          </Input>
-        </div>
-        <div className="modal-footer">
-          <Button onClick={this.handleToggle}>Close</Button>
-          <Button bsStyle="success" onClick={this.handleDelayResolved}>Ok</Button>
-        </div>
-      </Modal>
-    );
+    if (this.state.needsEdit) {
+      return (
+
+        <Modal title={"Edit " + this.props.curr.name} onRequestHide={this.toggleEditMenu}>
+          <div className="modal-body">
+            <Input type="text" onChange={this.handleChange.bind(null, "name")} placeholder={this.props.curr.name} addonBefore="Name"/>
+            <Input type="text" onChange={this.handleChange.bind(null, "init")} placeholder={this.props.curr.initiative} addonBefore="New Init"/>
+            <Input type="text" onChange={this.handleChange.bind(null, "hp")} placeholder={this.props.curr.hp || "none"} addonBefore="New HP"/>
+          </div>
+          <div className="modal-footer">
+            <Button onClick={this.toggleEditMenu}>Close</Button>
+            <Button bsStyle="success" onClick={this.handleEditCharacter}>Ok</Button>
+          </div>
+        </Modal>
+
+      );
+    }
+    else {
+      return (
+        <Modal title="Trigger!" onRequestHide={this.handleToggle}>
+          <div className="modal-body">
+            <Input type="select" label="Which spot to put this character?" onChange={this.handlePlayerSelect}>
+              <option value="choice">Select a Player</option>
+              {players}
+            </Input>
+          </div>
+          <div className="modal-footer">
+            <Button onClick={this.handleToggle}>Close</Button>
+            <Button bsStyle="success" onClick={this.handleDelayResolved}>Ok</Button>
+          </div>
+        </Modal>
+      );
+    }
   },
   render : function() {
     var hpStyle, hpPercent;
@@ -145,6 +202,7 @@ Player = React.createClass({
         >
           {(this.props.curr.delayed) ? "Trigger!" : "Delay Turn"}
         </Button>
+        <Button className={((this.state.show === false) ? "hide" : "") + " editBtn"} onClick={this.toggleEditMenu}>Edit</Button>
       </ListGroupItem>
     );
   }
