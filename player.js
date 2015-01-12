@@ -81,7 +81,7 @@ Player = React.createClass({
     this.toggleEditMenu();
     this.show();
   },
-  handleChange : function(name, e) {
+  handleEditChange : function(name, e) {
     var out = {};
     var val;
 
@@ -121,9 +121,9 @@ Player = React.createClass({
 
         <Modal title={"Edit " + this.props.curr.name} onRequestHide={this.toggleEditMenu}>
           <div className="modal-body">
-            <Input type="text" onChange={this.handleChange.bind(null, "name")} placeholder={this.props.curr.name} addonBefore="Name"/>
-            <Input type="text" onChange={this.handleChange.bind(null, "init")} placeholder={this.props.curr.initiative} addonBefore="New Init"/>
-            <Input type="text" onChange={this.handleChange.bind(null, "hp")} placeholder={this.props.curr.hp || "none"} addonBefore="New HP"/>
+            <Input type="text" onChange={this.handleEditChange.bind(null, "name")} placeholder={this.props.curr.name} addonBefore="Name"/>
+            <Input type="text" onChange={this.handleEditChange.bind(null, "init")} placeholder={this.props.curr.initiative} addonBefore="New Init"/>
+            <Input type="text" onChange={this.handleEditChange.bind(null, "hp")} placeholder={this.props.curr.hp || "none"} addonBefore="New HP"/>
           </div>
           <div className="modal-footer">
             <Button onClick={this.toggleEditMenu}>Close</Button>

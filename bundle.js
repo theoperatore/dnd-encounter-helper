@@ -143,6 +143,7 @@ var App = React.createClass({displayName: 'App',
     tmp[playerID].name = data.name || tmp[playerID].name;
     tmp[playerID].hp = (data.hp !== null) ? data.hp : tmp[playerID].hp;
     tmp[playerID].initiative = data.init || tmp[playerID].initiative;
+    tmp[playerID].dmg = 0;
 
     this.setState({ players : tmp});
     localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
@@ -20597,7 +20598,7 @@ Player = React.createClass({displayName: 'Player',
     this.toggleEditMenu();
     this.show();
   },
-  handleChange : function(name, e) {
+  handleEditChange : function(name, e) {
     var out = {};
     var val;
 
@@ -20637,9 +20638,9 @@ Player = React.createClass({displayName: 'Player',
 
         React.createElement(Modal, {title: "Edit " + this.props.curr.name, onRequestHide: this.toggleEditMenu}, 
           React.createElement("div", {className: "modal-body"}, 
-            React.createElement(Input, {type: "text", onChange: this.handleChange.bind(null, "name"), placeholder: this.props.curr.name, addonBefore: "Name"}), 
-            React.createElement(Input, {type: "text", onChange: this.handleChange.bind(null, "init"), placeholder: this.props.curr.initiative, addonBefore: "New Init"}), 
-            React.createElement(Input, {type: "text", onChange: this.handleChange.bind(null, "hp"), placeholder: this.props.curr.hp || "none", addonBefore: "New HP"})
+            React.createElement(Input, {type: "text", onChange: this.handleEditChange.bind(null, "name"), placeholder: this.props.curr.name, addonBefore: "Name"}), 
+            React.createElement(Input, {type: "text", onChange: this.handleEditChange.bind(null, "init"), placeholder: this.props.curr.initiative, addonBefore: "New Init"}), 
+            React.createElement(Input, {type: "text", onChange: this.handleEditChange.bind(null, "hp"), placeholder: this.props.curr.hp || "none", addonBefore: "New HP"})
           ), 
           React.createElement("div", {className: "modal-footer"}, 
             React.createElement(Button, {onClick: this.toggleEditMenu}, "Close"), 

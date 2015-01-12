@@ -142,6 +142,7 @@ var App = React.createClass({
     tmp[playerID].name = data.name || tmp[playerID].name;
     tmp[playerID].hp = (data.hp !== null) ? data.hp : tmp[playerID].hp;
     tmp[playerID].initiative = data.init || tmp[playerID].initiative;
+    tmp[playerID].dmg = 0;
 
     this.setState({ players : tmp});
     localStorage.setItem("__dnd_companion_encounter_helper_players", JSON.stringify(tmp));
