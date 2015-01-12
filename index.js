@@ -140,7 +140,7 @@ var App = React.createClass({
     var tmp = this.state.players;
 
     tmp[playerID].name = data.name || tmp[playerID].name;
-    tmp[playerID].hp = data.hp || tmp[playerID].hp;
+    tmp[playerID].hp = (data.hp !== null) ? data.hp : tmp[playerID].hp;
     tmp[playerID].initiative = data.init || tmp[playerID].initiative;
 
     this.setState({ players : tmp});
