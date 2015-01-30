@@ -1,8 +1,8 @@
 /** @jsx React.dom */
 var React = require('react'),
     ListGroup = require('react-bootstrap/ListGroup'),
-    Menu = require('./menu'),
-    Player = require('./player');
+    Menu = require('./components/menu'),
+    Player = require('./components/player');
 
 var App = React.createClass({
   getInitialState : function() {

@@ -4,7 +4,8 @@
   "description": "encounter helper for any dm",
   "main": "index.js",
   "scripts": {
-    "test": "browserify -t reactify index.js -o bundle.js && beefy"
+    "test" : "echo 'No tests specified' && exit",
+    "dev": "browserify -t reactify index.js -o bundle.js && beefy"
   },
   "author": "Alex Petersen <theoperatore@gmail.com>",
   "license": "MIT",

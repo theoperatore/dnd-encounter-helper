@@ -9,26 +9,24 @@
   width: 100%;
 }
 
-.toggle, .toggle:link, .toggle:visited, .toggle:focus { text-decoration:none; color: rgba(51, 51, 51, 1); }
+.toggle,
+.toggle:link,
+.toggle:visited,
+.toggle:focus { 
+  text-decoration:none; color: rgba(51, 51, 51, 1); 
+}
 
-.toggle:hover, .toggle:visited:hover {
+.toggle:hover,
+.toggle:visited:hover {
   text-decoration: none;
   color: rgba(51, ,51, 51, 1);
-}
-
-.options {
-  border-radius: 0px;
-  border: 0;
-  background-color: rgba(255, 255, 255, 0);
-}
-.options:hover, .options:focus {
-  background-color: rgba(255, 255, 255, 0);
 }
 
 .editBtn {
   margin-left: 5px;
 }
 
+/* For some reason, React-Bootstrap doesn't do the modal backdrop? */
 .modal-backdrop.in {
   width: 100%;
   height: 100%;
