@@ -1,68 +1,196 @@
-.fixed {
-  position:fixed;
-  bottom:0;
-  z-index:1;
-}
-
-.spacer { 
-  height: 45px;
-  width: 100%;
-}
-
-.toggle,
-.toggle:link,
-.toggle:visited,
-.toggle:focus { 
-  text-decoration:none; color: rgba(51, 51, 51, 1); 
-}
-
-.toggle:hover,
-.toggle:visited:hover {
-  text-decoration: none;
-  color: rgba(51, ,51, 51, 1);
-}
-
-.editBtn {
-  margin-left: 5px;
-}
-
-/* For some reason, React-Bootstrap doesn't do the modal backdrop? */
-.modal-backdrop.in {
-  width: 100%;
+html,
+body,
+#mount,
+#mount > section {
   height: 100%;
-  z-index: 2;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: helvetica, sans-serif;
+}
+
+footer {
+  display: block;
+}
+
+.bg-dark {
+  background-color: #333333;
+}
+
+.selected {
+  background-color: #afdfc9;
+}
+
+.transition-background {
+}
+
+.flow-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+.action-btn {
+  user-select: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  border: 0;
+  font-size: 24px;
+  min-height: 30px;
+  text-align: center;
+}
+
+.action-btn > span {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: block;
+  height: 100%;
+  width: 100%
+}
+
+.action-btn > span:active {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.character-container {
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+  transition: background-color 300ms ease;
+}
+
+.hp-down:active,
+.hp-up:active {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.interactable:active {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.modal-overlay {
   position: fixed;
-  top:0;
-  left:0;
+  opacity: 0;
+  z-index: 10;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: rgba(0,0,0, 0.65);
+  overflow: hidden;
+  line-height: 14px;
+  transition: opacity 300ms ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.list-group {
-  margin-bottom: 0;
-  z-index:-1;
-}
-.list-group-item {
-  transition: all 250ms;
-  border-radius: 0px;
-}
-
-.fixed>.btn-group>.btn {
-  border-radius: 0px !important;
-}
-
-.initiative-enter {
-  opacity: 0.01;
-  transition: all 250ms ease-in;
-}
-
-.initiative-enter.initiative-active {
+.modal-overlay.modal-overlay-active {
   opacity: 1;
 }
 
-.initiative-leave {
-  opacity: 1;
-  transition: all 250ms ease-in;
+.modal-overlay .modal-content-container {
+  transform: scale(1);
+  max-width: 500px;
+  flex: 1;
+  max-height: 95%;
+  margin: 2.5% 15px;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 2px;
+  transition: transform 300ms ease;
 }
 
-.initiative-leave.initiative-active {
-  opacity: 0.01;
+.modal-content-container.modal-content-transitioning {
+  transform: scale(1.1);
+}
+
+.modal-content-container.modal-content-active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.modal-header {
+  padding: 10px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.modal-footer {
+  border-top: 1px solid #333;
+  text-align: center;
+}
+
+.modal-footer button {
+  height: 30px;
+  appearance: none;
+  border: 0;
+  display: inline-block;
+  outline: none;
+  background-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.modal-footer button:first-child:nth-last-child(1) {
+  width: 100%;
+}
+
+.modal-footer button:first-child:nth-last-child(2),
+.modal-footer button:first-child:nth-last-child(2) ~ button {
+  width: 50%;
+}
+
+.modal-footer button:first-child:nth-last-child(3),
+.modal-footer button:first-child:nth-last-child(3) ~ button {
+    width: 33.333333333333%;
+}
+
+.modal-footer button:first-child:nth-last-child(4),
+.modal-footer button:first-child:nth-last-child(4) ~ button {
+    width: 25%;
+}
+
+.modal-footer p {
+  font-size: 13px;
+}
+
+.modal-footer button:disabled {
+  color: #777;
+}
+
+label {
+  display: block;
+  margin: 0;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+input[type='text'],
+input[type='number'] {
+  display: block;
+  width: 100%;
+  font-size: 18px;
+  margin: 0;
+  margin-bottom: 15px;
+  background-color: #333;
+  color: #fff;
+  border: 0;
+  border-bottom: 1px solid #555;
+  border-radius: 0;
 }

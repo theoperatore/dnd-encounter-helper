@@ -1,7 +1,7 @@
 DM-Encounter-Helper
 ===================
 
-A web app to help any DM manage an Encounter!
+A web app to help any DM manage an Encounter! [Check it out here](http://anpetersen.me/dnd-encounter-helper)
 
 ## Features
 
@@ -13,6 +13,6 @@ Here's a list!
 - Keep track of the current participant's turn
 - Edit any participant on the fly
 
-## License 
+## License
 
 MIT
