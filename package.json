@@ -1,34 +1,26 @@
 {
-  "name": "dm-companion",
-  "version": "0.1.0",
+  "name": "dm-companion-v2",
   "description": "encounter helper for any dm",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo 'No tests specified' && exit",
-    "build": "browserify -t babelify src/index.js -o bundle.js",
-    "watch": "watchify -dv -t babelify src/index.js -o bundle.js",
-    "dev": "beefy"
-  },
+  "version": "0.1.0",
+  "private": true,
   "author": "Alex Petersen <theoperatore@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "babel-plugin-transform-function-bind": "^6.8.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-react": "^6.11.1",
-    "babel-preset-stage-1": "^6.5.0",
-    "babelify": "^7.3.0",
-    "beefy": "^2.1.8",
-    "browserify": "^7.1.0",
-    "fastclick": "^1.0.6",
-    "watchify": "^3.7.0"
+    "custom-react-scripts": "0.0.20"
   },
   "dependencies": {
     "classnames": "^2.2.5",
+    "fastclick": "^1.0.6",
     "node-uuid": "^1.4.7",
-    "react": "^15.2.1",
-    "react-dom": "^15.2.1",
-    "redux": "^3.5.2",
-    "redux-logger": "^2.6.1",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "redux": "^3.6.0",
     "redux-thunk": "^2.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   }
 }

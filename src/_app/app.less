@@ -1,79 +1,5 @@
-html,
-body,
-#mount,
-#mount > section {
+.App {
   height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  font-family: helvetica, sans-serif;
-}
-
-footer {
-  display: block;
-}
-
-.bg-dark {
-  background-color: #333333;
-}
-
-.selected {
-  background-color: #afdfc9;
-}
-
-.transition-background {
-}
-
-.flow-scroll {
-  -webkit-overflow-scrolling: touch;
-}
-
-.action-btn {
-  user-select: none;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  border: 0;
-  font-size: 24px;
-  min-height: 30px;
-  text-align: center;
-}
-
-.action-btn > span {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  display: block;
-  height: 100%;
-  width: 100%
-}
-
-.action-btn > span:active {
-  background-color: rgba(0, 0, 0, 0.25);
-}
-
-.character-container {
-  cursor: pointer;
-  border-bottom: 1px solid #ccc;
-  transition: background-color 300ms ease;
-}
-
-.hp-down:active,
-.hp-up:active {
-  background-color: rgba(0, 0, 0, 0.25);
-}
-
-.interactable:active {
-  background-color: rgba(0, 0, 0, 0.25);
 }
 
 .modal-overlay {
@@ -172,25 +98,4 @@ footer {
 
 .modal-footer button:disabled {
   color: #777;
-}
-
-label {
-  display: block;
-  margin: 0;
-  margin-bottom: 5px;
-  font-size: 12px;
-}
-
-input[type='text'],
-input[type='number'] {
-  display: block;
-  width: 100%;
-  font-size: 18px;
-  margin: 0;
-  margin-bottom: 15px;
-  background-color: #333;
-  color: #fff;
-  border: 0;
-  border-bottom: 1px solid #555;
-  border-radius: 0;
 }
