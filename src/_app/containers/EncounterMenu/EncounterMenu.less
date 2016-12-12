@@ -1,0 +1,63 @@
+@import '../../../style/variables.less';
+
+.encounter-menu {
+  &-title {
+    padding: @p-sm;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    border-bottom: 1px solid @grey-40;
+
+    img {
+      background-color: @light;
+      border-radius: 50%;
+      margin-right: @m-sm;
+    }
+  }
+
+  &-body {
+    &-section {
+      &-header {
+        user-select: none;
+        display: flex;
+        padding: @p-sm;
+        margin-bottom: @m-sm;
+        margin-top: @m-sm;
+        color: @grey-40;
+
+        h5 {
+          flex-grow: 1;
+        }
+      }
+
+      &-list {
+        button {
+          display: block;
+          color: @light;
+          border: 0;
+          font-size: @font-size-md;
+          width: 100%;
+          text-align: left;
+          padding: @p-sm;
+          background-color: @dark;
+          user-select: none;
+          cursor: pointer;
+          
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+          &:active,
+          &:focus {
+            background-color: rgba(0, 0, 0, 0.65);
+          }
+        }
+      }
+    }
+  }
+}

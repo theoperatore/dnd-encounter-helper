@@ -1,5 +1,3 @@
-'use strict';
-
 import React from 'react';
 import reactDOM from 'react-dom';
 
@@ -39,7 +37,10 @@ export default React.createClass({
   },
 
   renderPortal() {
-    let { id, children, ...others} = this.props;
+    let {children, ...others} = this.props;
+
+    delete others.id;
+
     reactDOM.render(<div {...others}>{children}</div>, this.portalContainer);
   },
 

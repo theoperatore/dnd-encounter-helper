@@ -1,0 +1,26 @@
+@import '../../../style/variables.less';
+
+.navbar {
+  width: 100%;
+
+  min-height: @font-size-xl + 2 * @p-sm;
+
+  background-color: @dark;
+  color: @light;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+
+  &-btn {
+    font-size: @font-size-lg;
+    padding: @p-sm;
+    min-width: 35px;
+  }
+
+  &-title {
+    padding: @p-sm;
+    flex-grow: 1;
+    text-align: center;
+  }
+}
