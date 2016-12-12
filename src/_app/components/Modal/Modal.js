@@ -22,6 +22,8 @@ export default class Modal extends Component {
       active: false,
       open: false,
     };
+
+    this.dismiss = this.dismiss.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -65,7 +67,7 @@ export default class Modal extends Component {
 
     return this.state.active
       ? <Portal id={this.props.id}>
-          <div ref='overlay' className={css} onClick={this.dismiss.bind(this)}>
+          <div ref='overlay' className={css} onClick={this.dismiss}>
             <div className={container}>
               {this.props.children}
             </div>
