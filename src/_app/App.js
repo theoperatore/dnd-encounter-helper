@@ -3,6 +3,7 @@ import Navbar from './components/Navbar/Navbar';
 
 import EncounterMenu from './containers/EncounterMenu';
 import ProfileMenu from './containers/ProfileMenu';
+import Character from './containers/Character';
 
 import './app.less';
 
@@ -17,13 +18,33 @@ export default class App extends Component {
   }
 
   render() {
+    const characters = [];
+
     return (
       <div className="app">
         <Navbar
-          title={'Encouter 1'}
+          title={'Test Encouter 1'}
           onLeftMenuClick={() => this.setState({ encounterMenuOpen: true })}
           onRightMenuClick={() => this.setState({ profileMenuOpen: true })}
         />
+        <div className='app-content'>
+          {characters.length === 0 && (
+            <div>
+              <p className='app-subtext'>No participants in this encounter...</p>
+              <button className='app-subtext-btn app-subtext-btn-ok'><span className='fa fa-check'></span> Complete</button>
+              <button className='app-subtext-btn app-subtext-btn-del'><span className='fa fa-remove'></span> Delete</button>
+            </div>
+          )}
+          {characters.map(character => (
+            <Character
+              key={character.id}
+              id={character.id}
+              name={character.name}
+              initiative={character.initiative}
+              statuses={character.statuses}
+            />
+          ))}
+        </div>
         <EncounterMenu
           open={this.state.encounterMenuOpen}
           onDismiss={() => this.setState({ encounterMenuOpen: false })}
@@ -33,7 +54,7 @@ export default class App extends Component {
           onEncounterSelect={() => {}}
           onPlayerSelect={() => {}}
           onMonsterSelect={() => {}}
-          encounters={[{ id: 'enc-1', name: 'Encounter 1'}]}
+          encounters={[{ id: 'enc-1', name: 'Test Encounter 1'}]}
           players={[]}
           monsters={[]}
         />

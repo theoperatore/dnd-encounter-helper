@@ -1,0 +1,49 @@
+@import '../../../style/variables.less';
+
+.character {
+  color: @dark;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+
+  border-bottom: 1px solid @grey-85;
+
+  min-height: 100px;
+
+  &:first-of-type {
+    border-top: 1px solid @grey-85;
+  }
+
+  &-section {
+    padding: @p-sm;
+
+    &-initiative {
+      font-size: @font-size-xl;
+    }
+
+    &-subtitle {
+      font-size: @font-size-md;
+      color: @grey-85;
+      text-align: center;
+    }
+
+    &-name {
+      font-size: @font-size-md;
+      margin-bottom: @m-sm;
+    }
+
+    &-statuses {
+      margin-top: @m-sm;
+    }
+
+    &-status {
+      user-select: none;
+      cursor: pointer;
+      margin-bottom: @m-sm;
+      display: inline-block;
+      margin-right: @m-sm;
+      color: @grey-85;
+      text-transform: uppercase;
+    }
+  }
+}
