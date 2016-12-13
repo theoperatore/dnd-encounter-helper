@@ -1,0 +1,53 @@
+@import '../../../style/variables.less';
+
+.create-encounter {
+  .help-text {
+    color: @grey-75;
+  }
+
+  &-tiles {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    max-height: 300px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  &-tile {
+    width: 62px;
+    height: 62px;
+    margin-right: @m-sm;
+    margin-top: @m-sm;
+    padding: @p-sm;
+    user-select: none;
+    background-color: @grey-85;
+    color: @grey-40;
+
+    &-initials {
+      font-size: @font-size-lg;
+    }
+
+    &-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: @font-size-sm;
+    }
+  }
+
+  &-selected {
+    margin-top: @m-sm;
+    display: flex;
+    flex-wrap: wrap;
+
+    &-name {
+      padding: @p-sm;
+      margin-right: @m-sm;
+      margin-bottom: @m-sm;
+      border-radius: 10px;
+      border: 1px solid @grey-55;
+    }
+  }
+}
