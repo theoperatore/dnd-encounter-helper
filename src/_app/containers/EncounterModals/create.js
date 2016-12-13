@@ -12,10 +12,8 @@ export default class CreateEncounterModal extends Component {
     onDismiss: PropTypes.func.isRequired,
     onCreateEncounter: PropTypes.func.isRequired,
     onCreateMonster: PropTypes.func.isRequired,
-    monsters: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-    })).isRequired,
+    monstersDefinitions: PropTypes.object.isRequired,
+    monsters: PropTypes.arrayOf(PropTypes.string).isRequired,
   }
 
   constructor(props) {
@@ -133,6 +131,7 @@ export default class CreateEncounterModal extends Component {
     const {
       active,
       monsters,
+      monstersDefinitions,
     } = this.props;
 
     const {
@@ -158,14 +157,14 @@ export default class CreateEncounterModal extends Component {
             placeholder='encounter name...'
           />
           <div className='create-encounter-tiles'>
-            {monsters.map(monster => (
+            {monsters.map(id => (
               <div
-                key={monster.id}
+                key={monstersDefinitions[id].id}
                 className='create-encounter-tile'
-                onClick={() => this.queueMonster(monster)}
+                onClick={() => this.queueMonster(monstersDefinitions[id])}
               >
-                <p className='create-encounter-tile-initials'>{monster.name.slice(0, 2)}</p>
-                <p className='create-encounter-tile-name'>{monster.name}</p>
+                <p className='create-encounter-tile-initials'>{monstersDefinitions[id].name.slice(0, 2)}</p>
+                <p className='create-encounter-tile-name'>{monstersDefinitions[id].name}</p>
               </div>
             ))}
             <div className='create-encounter-tile' onClick={() => this.setState({ createMonster: true })}>

@@ -14,6 +14,9 @@ export default function EncounterMenuContent(props) {
     encounters = [],
     players = [],
     monsters = [],
+    encountersDefinitions = {},
+    playersDefinitions = {},
+    monstersDefinitions = {},
     title = 'DM Companion'
   } = props;
 
@@ -34,12 +37,12 @@ export default function EncounterMenuContent(props) {
           <span className='fa fa-plus-circle'></span>
         </div>
         <div className='encounter-menu-body-section-list'>
-          {encounters.map(encounter => (
+          {encounters.map(id => (
             <button
-              key={encounter.id}
-              title={encounter.name}
-              onClick={() => onEncounterSelect(encounter.id)}
-            >{encounter.name}</button>
+              key={encountersDefinitions[id].id}
+              title={encountersDefinitions[id].name}
+              onClick={() => onEncounterSelect(encountersDefinitions[id].id)}
+            >{encountersDefinitions[id].name}</button>
           ))}
         </div>
       </div>
@@ -49,12 +52,12 @@ export default function EncounterMenuContent(props) {
           <span className='fa fa-plus-circle'></span>
         </div>
         <div className='encounter-menu-body-section-list'>
-          {players.map(player => (
+          {players.map(id => (
             <button
-              key={player.id}
-              title={player.name}
-              onClick={() => onPlayerSelect(player.id)}
-            >{player.name}</button>
+              key={playersDefinitions[id].id}
+              title={playersDefinitions[id].name}
+              onClick={() => onPlayerSelect(playersDefinitions[id].id)}
+            >{playersDefinitions[id].name}</button>
           ))}
         </div>
       </div>
@@ -64,12 +67,12 @@ export default function EncounterMenuContent(props) {
           <span className='fa fa-plus-circle'></span>
         </div>
         <div className='encounter-menu-body-section-list'>
-          {monsters.map(monster => (
+          {monsters.map(id => (
             <button
-              key={monster.id}
-              title={monster.name}
-              onClick={() => onMonsterSelect(monster.id)}
-            >{monster.name}</button>
+              key={monstersDefinitions[id].id}
+              title={monstersDefinitions[id].name}
+              onClick={() => onMonsterSelect(monstersDefinitions[id].id)}
+            >{monstersDefinitions[id].name}</button>
           ))}
         </div>
       </div>

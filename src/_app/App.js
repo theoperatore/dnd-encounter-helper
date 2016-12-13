@@ -54,8 +54,11 @@ export default class App extends Component {
       encounter,
       characters,
       encounters,
+      encountersDefinitions,
       monsters,
+      monstersDefinitions,
       players,
+      playersDefinitions,
     } = this.props.state;
 
     return (
@@ -94,8 +97,11 @@ export default class App extends Component {
           onPlayerSelect={() => {}}
           onMonsterSelect={() => {}}
           encounters={encounters}
+          encountersDefinitions={encountersDefinitions}
           players={players}
+          playersDefinitions={playersDefinitions}
           monsters={monsters}
+          monstersDefinitions={monstersDefinitions}
         />
         <ProfileMenu
           open={this.state.profileMenuOpen}
@@ -107,6 +113,7 @@ export default class App extends Component {
           onCreateEncounter={this.handleAddEncounter}
           onCreateMonster={this.handleAddMonster}
           monsters={monsters}
+          monstersDefinitions={monstersDefinitions}
         />
         <CreatePlayerModal
           active={this.state.newPlayerModalOpen}

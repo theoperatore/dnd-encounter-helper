@@ -3,9 +3,9 @@ import thunkMiddlware from 'redux-thunk';
 
 import { characters } from './characters/reducer';
 import { encounter } from './encounter/reducer';
-import { encounters } from './encounters/reducer';
-import { players } from './players/reducer';
-import { monsters } from './monsters/reducer';
+import { encounters, encountersDefinitions } from './encounters/reducer';
+import { players, playersDefinitions } from './players/reducer';
+import { monsters, monstersDefinitions } from './monsters/reducer';
 import { user } from './user/reducer';
 
 export default function createAppStore(initialState) {
@@ -14,8 +14,11 @@ export default function createAppStore(initialState) {
       characters,
       encounter,
       encounters,
+      encountersDefinitions,
       players,
+      playersDefinitions,
       monsters,
+      monstersDefinitions,
       user,
     }),
     initialState,

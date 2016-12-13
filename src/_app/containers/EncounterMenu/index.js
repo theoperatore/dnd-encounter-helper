@@ -16,6 +16,9 @@ export default class EncounterMenu extends Component {
     encounters: PropTypes.array.isRequired,
     players: PropTypes.array.isRequired,
     monsters: PropTypes.array.isRequired,
+    encountersDefinitions: PropTypes.object.isRequired,
+    playersDefinitions: PropTypes.object.isRequired,
+    monstersDefinitions: PropTypes.object.isRequired,
     title: PropTypes.string,
   }
 
