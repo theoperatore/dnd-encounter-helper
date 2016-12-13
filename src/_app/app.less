@@ -44,3 +44,56 @@
     }
   }
 }
+
+.modal {
+  min-width: 85vw;
+  max-width: 85vw;
+
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+
+  &-header {
+    color: @light;
+    background-color: @dark;
+    padding: @p-md;
+    font-size: @font-size-lg;
+  }
+
+  &-body {
+    padding: @p-md;
+    flex-grow: 1;
+    background-color: @light;
+  }
+
+  &-label {
+    display: block;
+  }
+
+  &-input {
+    width: 100%;
+    padding: @p-md;
+    font-size: @font-size-md;
+  }
+
+  &-footer {
+    background-color: @grey-95;
+    display: flex;
+  }
+
+  &-btn {
+    flex-grow: 1;
+    border: 0;
+    font-size: @font-size-md;
+    padding: @p-sm;
+
+    &-ok {
+      color: @success;
+    }
+
+    &-del {
+      color: @danger;
+    }
+  }
+
+}
