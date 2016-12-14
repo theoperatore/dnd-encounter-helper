@@ -47,11 +47,7 @@ export default class CreateEncounterModal extends Component {
     const monsters = this.state.queued.reduce((agg, q) => {
       const items = new Array(q.count)
         .fill(1)
-        .map(i => {
-          const itm = { ...q };
-          delete itm.count;
-          return itm;
-        });
+        .map(i => q.id);
 
       return agg.concat(items);
     }, []);

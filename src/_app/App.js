@@ -10,6 +10,7 @@ import CreateMonsterModal from './containers/MonsterModals/create';
 
 import { addPlayer } from '../state/players/actions';
 import { addMonster } from '../state/monsters/actions';
+import { addEncounter } from '../state/encounters/actions';
 
 import './app.less';
 
@@ -36,7 +37,8 @@ export default class App extends Component {
   }
 
   handleAddEncounter(name, monsters) {
-    console.log(name, monsters);
+    this.props.dispatch(addEncounter(name, monsters));
+    this.setState({ newEncounterModalOpen: false });
   }
 
   handleAddPlayer(newPlayerName) {
