@@ -28,6 +28,7 @@ export default class AssignInitiative extends Component {
     let foundInvalid = false;
     const inits = Object
       .keys(this.selects)
+      .filter(uri => this.selects[uri])
       .reduce((agg, uri) => {
         const value = Number(this.selects[uri].value);
         agg[uri] = value;
