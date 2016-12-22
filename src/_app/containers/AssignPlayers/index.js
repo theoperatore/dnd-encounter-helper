@@ -44,7 +44,7 @@ export default class AssignPlayers extends Component {
     if (players.length === 0) return;
 
     this.props.onPlayersAssign(encounterDefinition.id, players);
-    this.setState({ selectedPlayers: {} });
+    this.setState({ selectedPlayers: {}, selectAll: true });
   }
 
   toggleSelectAll() {

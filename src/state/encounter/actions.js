@@ -6,7 +6,7 @@ function _startEncounter(id, initiatives) {
   };
 }
 
-export function startEncounter(id, uriToInits) {
+export function setupEncounter(id, uriToInits) {
   return dispatch => {
     const initiatives = Object.keys(uriToInits)
       .map(uri => ({

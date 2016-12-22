@@ -1,5 +1,5 @@
 const defaultState = {
-  order: [],
+  participants: [],
   selectedEncounter: null,
   startEncounterId: null,
 };
@@ -16,7 +16,7 @@ export function encounter(state = defaultState, action) {
       return {
         ...state,
         selectedEncounter: action.id,
-        order: action
+        participants: action
           .initiatives
           .sort((a, b) => b.init - a.init),
       };

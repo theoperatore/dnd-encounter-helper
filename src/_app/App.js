@@ -13,7 +13,7 @@ import AssignInitiative from './containers/AssignInitiative';
 import { addPlayer } from '../state/players/actions';
 import { addMonster } from '../state/monsters/actions';
 import { addEncounter, addPlayersToEncounter } from '../state/encounters/actions';
-import { selectEncounter, startEncounter } from '../state/encounter/actions';
+import { selectEncounter, setupEncounter } from '../state/encounter/actions';
 
 import './app.less';
 
@@ -70,7 +70,7 @@ export default class App extends Component {
   }
 
   handleInitiativesAssigned(encounterId, combatantsToInitatives) {
-    this.props.dispatch(startEncounter(encounterId, combatantsToInitatives));
+    this.props.dispatch(setupEncounter(encounterId, combatantsToInitatives));
     this.setState({ assignInitiativeOpen: false });
   }
 
@@ -108,7 +108,7 @@ export default class App extends Component {
               {/* <button className='app-subtext-btn app-subtext-btn-del'><span className='fa fa-remove'></span> Delete</button> */}
             </div>
           )}
-          {encounter.order.map(participant => {
+          {encounter.participants.map(participant => {
             const parts = participant.uri.split(':');
             const [id, dupeCount] = parts;
 
@@ -126,7 +126,6 @@ export default class App extends Component {
               id={participant.uri}
               name={name}
               initiative={participant.init}
-              statuses={participant.statuses}
             />
           })}
         </div>
