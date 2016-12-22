@@ -21,6 +21,15 @@ export function encountersDefinitions(state = {}, action) {
         },
       };
     }
+    case 'addPlayersToEncounter': {
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          players: action.players,
+        },
+      };
+    }
     default:
       return state;
   }

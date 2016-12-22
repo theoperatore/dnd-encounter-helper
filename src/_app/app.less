@@ -45,6 +45,15 @@
   }
 }
 
+.btn-primary {
+  padding: @p-sm;
+  font-size: @font-size-md;
+  background-color: @primary;
+  border: 0;
+  color: @light;
+  border-radius: 2px;
+}
+
 .modal {
   min-width: 85vw;
   max-width: 85vw;
@@ -79,6 +88,7 @@
   &-footer {
     background-color: @grey-95;
     display: flex;
+    min-height: 40px;
   }
 
   &-btn {
@@ -86,6 +96,7 @@
     border: 0;
     font-size: @font-size-md;
     padding: @p-sm;
+    background-color: transparent;
 
     &-ok {
       color: @success;
@@ -95,5 +106,27 @@
       color: @danger;
     }
   }
+}
 
+.list-item {
+  padding: @p-sm;
+  border-bottom: 1px solid @grey-75;
+
+  &:first-of-type {
+    border-top: 1px solid @grey-75;
+  }
+}
+
+.input {
+  width: 100%;
+  padding: @p-md;
+  font-size: @font-size-md;
+  border: 1px solid @grey-85;
+  background-color: @light;
+  border-radius: 2px;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: @m-sm;
 }

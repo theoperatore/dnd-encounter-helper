@@ -11,6 +11,14 @@ export function _addEncounter(name, monsters) {
   };
 }
 
+export function addPlayersToEncounter(id, players) {
+  return {
+    type: 'addPlayersToEncounter',
+    id,
+    players,
+  };
+}
+
 export function addEncounter(name, monsters) {
   return dispatch => {
 

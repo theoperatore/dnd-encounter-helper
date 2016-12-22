@@ -1,0 +1,36 @@
+@import '../../../style/variables.less';
+
+.assign-players {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &-header {
+    padding: @p-sm;
+    font-size: @font-size-lg;
+
+    .subtext {
+      margin-top: @m-sm;
+      font-size: @font-size-sm;
+      color: @grey-55;
+    }
+  }
+
+  &-body {
+    padding: @p-sm;
+    background-color: @light;
+    color: @dark;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    .create-encounter-tiles {
+      max-height: inherit;
+      flex-grow: 1;
+    }
+  }
+
+  &-footer {
+
+  }
+}
