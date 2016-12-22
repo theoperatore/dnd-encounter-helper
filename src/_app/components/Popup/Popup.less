@@ -1,0 +1,55 @@
+@import '../../../style/variables.less';
+
+.popup {
+  &-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+
+    transition: background-color 300ms ease;
+    background-color: transparent;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    &-from-top {
+      justify-content: flex-start;
+    }
+
+    &-from-bottom {
+      justify-content: flex-end;
+    }
+
+    &-open {
+      background-color: rgba(0, 0, 0, 0.65);
+    }
+  }
+
+  &-body {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    background-color: @dark;
+    color: @light;
+
+    transform: translateY(-100%);
+    transition: transform 300ms ease;
+
+    &-from-top {
+      transform: translateY(-100%);
+    }
+
+    &-from-bottom {
+      transform: translateY(100%);
+    }
+
+    &-open {
+      transform: translateY(0);
+    }
+  }
+}
