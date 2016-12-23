@@ -13,6 +13,32 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  &-actions {
+    min-height: 64px;
+    background-color: @dark;
+    color: @light;
+    display: flex;
+
+    &-btn {
+      font-size: @font-size-md;
+      flex-grow: 1;
+      color: @light;
+      appearance: none;
+      border: 0;
+      background-color: transparent;
+
+      span {
+        display: block;
+        font-size: @font-size-lg;
+      }
+
+      .action-subtext {
+        margin-top: @m-sm;
+        font-size: @font-size-sm;
+      }
+    }
+  }
+
   &-subtext {
     margin-top: @m-xl;
     padding: @p-md;

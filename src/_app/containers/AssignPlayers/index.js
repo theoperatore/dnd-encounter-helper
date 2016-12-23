@@ -106,8 +106,8 @@ export default class AssignPlayers extends Component {
     >
       <div className='assign-players'>
         <div className='assign-players-header'>
-          <h3>Add players</h3>
-          <p className='subtext'>{encounterDefinition.name}</p>
+          <h3>{encounterDefinition.name}</h3>
+          <p className='subtext'>Add players</p>
         </div>
         <div className='assign-players-body create-encounter'>
           <button onClick={this.toggleSelectAll} className='btn btn-primary'

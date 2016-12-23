@@ -3,7 +3,7 @@ import Popup from '../../components/Popup/Popup';
 
 import './AssignInitiative.less';
 
-const initiatives = new Array(50)
+const initiatives = new Array(35)
   .fill(0)
   .map((z, idx) => (<option key={idx} value={idx + 1}>{idx + 1}</option>));
 

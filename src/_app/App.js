@@ -129,6 +129,11 @@ export default class App extends Component {
             />
           })}
         </div>
+        <div className='app-actions'>
+          <button className='app-actions-btn'><span className='fa fa-edit'/><span className='action-subtext'>Options</span></button>
+          <button className='app-actions-btn'><span className='fa fa-share'/><span className='action-subtext'>Start</span></button>
+          <button className='app-actions-btn'><span className='fa fa-remove'/><span className='action-subtext'>Clear</span></button>
+        </div>
         <EncounterMenu
           open={this.state.encounterMenuOpen}
           onDismiss={() => this.setState({ encounterMenuOpen: false })}
