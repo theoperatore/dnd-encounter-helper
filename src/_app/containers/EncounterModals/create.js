@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-import Modal from '../../components/Modal/Modal';
+import Popup from '../../components/Popup/Popup';
 import ConfirmModal from '../ConfirmModal';
 import CreateMonsterModal from '../MonsterModals/create';
 
@@ -134,16 +134,17 @@ export default class CreateEncounterModal extends Component {
       queued,
     } = this.state;
 
-    return <Modal
+    return <Popup
       id='create-encounter'
       active={active}
       onDismiss={this.handleDismiss}
+      direction='bottom'
     >
-      <div className='modal'>
+      <div className='encounter'>
         <div className='modal-header'>
           <h3>Create encounter</h3>
         </div>
-        <div className='modal-body create-encounter'>
+        <div className='create-encounter'>
           {/* <p className='help-text'>Select a monster one or more times to add it to this encounter one or more times.</p> */}
           <input
             ref={r => this.encounterName = r}
@@ -192,6 +193,6 @@ export default class CreateEncounterModal extends Component {
         onDismiss={() => this.setState({ createMonster: false })}
         onCreate={this.handleAddMonster}
       />
-    </Modal>
+    </Popup>
   }
 }

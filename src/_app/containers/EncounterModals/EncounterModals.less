@@ -1,6 +1,18 @@
 @import '../../../style/variables.less';
 
+.encounter {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 .create-encounter {
+  background-color: @light;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
   .help-text {
     color: @grey-75;
   }
@@ -9,13 +21,10 @@
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-
-    max-height: 300px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
   }
 
   &-tile {
+    display: inline;
     width: 62px;
     height: 62px;
     margin-right: @m-sm;
@@ -45,6 +54,7 @@
     margin-top: @m-sm;
     display: flex;
     flex-wrap: wrap;
+    color: @dark;
 
     &-name {
       padding: @p-sm;
