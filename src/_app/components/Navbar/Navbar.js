@@ -13,9 +13,9 @@ export default function Navbar(props) {
       onClick={onLeftMenuClick}
     ></span>
     <h3 className='navbar-title'>{title}</h3>
-    <span
+    {/* <span
       className='fa fa-ellipsis-v navbar-btn'
       onClick={onRightMenuClick}
-    ></span>
+    ></span> */}
   </div>
 }

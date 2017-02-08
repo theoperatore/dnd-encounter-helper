@@ -10,10 +10,10 @@ import CreateMonsterModal from './containers/MonsterModals/create';
 import AssignPlayers from './containers/AssignPlayers';
 import AssignInitiative from './containers/AssignInitiative';
 
+import { selectEncounter, assignPlayersToEncounter, startEncounter, clearEncounter } from '../state/currentEncounter/actions';
 import { addPlayer } from '../state/players/actions';
 import { addMonster } from '../state/monsters/actions';
-import { addEncounter, addPlayersToEncounter } from '../state/encounters/actions';
-import { selectEncounter, setupEncounter } from '../state/encounter/actions';
+import { addEncounter } from '../state/encounters/actions';
 
 import './app.less';
 
@@ -60,23 +60,49 @@ export default class App extends Component {
   }
 
   handleSelectEncounter(id) {
-    this.props.dispatch(selectEncounter(id));
+    const { encountersDefinitions, monstersDefinitions } = this.props.state;
+    const selectedEncounter = encountersDefinitions[id];
+    const selectedEncounterMonsters = selectedEncounter
+      .monsters
+      .map(mid => ({ ...monstersDefinitions[mid], damage: 0 }))
+      .reduce((out, monster) => ({
+        ...out,
+        [monster.id]: {...monster},
+      }), {});
+
+    this.props.dispatch(selectEncounter(id, selectedEncounterMonsters));
     this.setState({ encounterMenuOpen: false, assignPlayersOpen: true });
   }
 
   handlePlayersAssign(id, players) {
-    this.props.dispatch(addPlayersToEncounter(id, players));
+    const { playersDefinitions } = this.props.state;
+    const selectedPlayers = players
+      .map(pid => ({ ...playersDefinitions[pid], damage: 0 }))
+      .reduce((out, player) => ({
+        ...out,
+        [player.id]: {...player},
+      }), {});
+    this.props.dispatch(assignPlayersToEncounter(selectedPlayers));
     this.setState({ assignPlayersOpen: false, assignInitiativeOpen: true });
   }
 
-  handleInitiativesAssigned(encounterId, combatantsToInitatives) {
-    this.props.dispatch(setupEncounter(encounterId, combatantsToInitatives));
+  handleInitiativesAssigned(combatantsToInitatives) {
+    const order = Object
+      .keys(combatantsToInitatives)
+      .map(playerMonsterIdsWithCount => ({
+        id: playerMonsterIdsWithCount,
+        type: playerMonsterIdsWithCount.split(':').length > 1 ? 'monster' : 'player',
+        initiative: combatantsToInitatives[playerMonsterIdsWithCount],
+      }))
+      .sort((a, b) => b.initiative - a.initiative);
+
+    this.props.dispatch(startEncounter(order));
     this.setState({ assignInitiativeOpen: false });
   }
 
   render() {
     const {
-      encounter,
+      currentEncounter,
       encounters,
       encountersDefinitions,
       monsters,
@@ -85,13 +111,12 @@ export default class App extends Component {
       playersDefinitions,
     } = this.props.state;
 
-    const selectedEncounter = encountersDefinitions[encounter.selectedEncounter];
-    const hasEncounterSelected = !!selectedEncounter;
+    const selectedEncounter = encountersDefinitions[currentEncounter.id];
+    const hasEncounterSelected = selectedEncounter !== undefined && currentEncounter.order && currentEncounter.order.length > 0;
 
     const encounterTitle = selectedEncounter
       ? selectedEncounter.name
       : '';
-
 
     return (
       <div className="app">
@@ -108,31 +133,30 @@ export default class App extends Component {
               {/* <button className='app-subtext-btn app-subtext-btn-del'><span className='fa fa-remove'></span> Delete</button> */}
             </div>
           )}
-          {encounter.participants.map(participant => {
-            const parts = participant.uri.split(':');
-            const [id, dupeCount] = parts;
+          {hasEncounterSelected && currentEncounter.order.map(participant => {
+            const partsIfMonster = participant.id.split(':');
+            const isMonster = participant.type === 'monster' && partsIfMonster.length > 1;
+            const id = partsIfMonster[0];
+            const name = isMonster
+              ? `${monstersDefinitions[id].name} ${partsIfMonster[1]}`
+              : playersDefinitions[id].name;
 
-            const pDef = playersDefinitions[id];
-            const mDef = monstersDefinitions[id];
-
-            const isPlayer = !!pDef;
-
-            const name = isPlayer
-              ? pDef.name
-              : `${mDef.name} ${dupeCount}`;
+            const damage = isMonster
+              ? currentEncounter.monstersDefinitions[id].damage
+              : currentEncounter.playersDefinitions[id].damage;
 
             return <Character
-              key={participant.uri}
-              id={participant.uri}
+              key={participant.id}
+              id={id}
               name={name}
-              initiative={participant.init}
+              damage={damage}
             />
           })}
         </div>
         <div className='app-actions'>
-          <button className='app-actions-btn'><span className='fa fa-edit'/><span className='action-subtext'>Options</span></button>
+          {/* <button className='app-actions-btn'><span className='fa fa-edit'/><span className='action-subtext'>Options</span></button> */}
           <button className='app-actions-btn'><span className='fa fa-share'/><span className='action-subtext'>Start</span></button>
-          <button className='app-actions-btn'><span className='fa fa-remove'/><span className='action-subtext'>Clear</span></button>
+          <button className='app-actions-btn' onClick={() => this.props.dispatch(clearEncounter())}><span className='fa fa-remove'/><span className='action-subtext'>Clear</span></button>
         </div>
         <EncounterMenu
           open={this.state.encounterMenuOpen}
@@ -176,7 +200,7 @@ export default class App extends Component {
           active={this.state.assignPlayersOpen}
           onDismiss={() => this.setState({ assignPlayersOpen: false })}
           onPlayersAssign={this.handlePlayersAssign}
-          encounterDefinition={encountersDefinitions[encounter.startEncounterId] || {}}
+          encounterDefinition={encountersDefinitions[currentEncounter.id] || {}}
           players={players}
           playersDefinitions={playersDefinitions}
           onPlayerCreate={this.handleAddPlayer}
@@ -184,9 +208,7 @@ export default class App extends Component {
         <AssignInitiative
           active={this.state.assignInitiativeOpen}
           onDismiss={() => this.setState({ assignInitiativeOpen: false })}
-          encounterDefinition={encountersDefinitions[encounter.startEncounterId] || {}}
-          playersDefinitions={playersDefinitions}
-          monstersDefinitions={monstersDefinitions}
+          currentEncounter={currentEncounter}
           onInitiativesAssigned={this.handleInitiativesAssigned}
         />
       </div>

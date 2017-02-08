@@ -19,10 +19,11 @@
 
     &-initiative {
       font-size: @font-size-xl;
+      min-width: 115px;
     }
 
     &-subtitle {
-      font-size: @font-size-md;
+      font-size: @font-size-sm;
       color: @grey-85;
       text-align: center;
     }
@@ -30,6 +31,22 @@
     &-name {
       font-size: @font-size-md;
       margin-bottom: @m-sm;
+    }
+
+    &-damage {
+      display: flex;
+      align-items: center;
+
+      span {
+        border: 1px solid @grey-85;
+        padding: @p-md;
+        border-radius: 2px;
+      }
+
+      input[type='range'] {
+        margin-left: 5px;
+        margin-right: 5px;
+      }
     }
 
     &-statuses {

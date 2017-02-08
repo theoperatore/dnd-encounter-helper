@@ -11,9 +11,7 @@ export default class AssignInitiative extends Component {
   static propTypes = {
     active: PropTypes.bool.isRequired,
     onDismiss: PropTypes.func.isRequired,
-    encounterDefinition: PropTypes.object.isRequired,
-    monstersDefinitions: PropTypes.object.isRequired,
-    playersDefinitions: PropTypes.object.isRequired,
+    currentEncounter: PropTypes.object.isRequired,
     onInitiativesAssigned: PropTypes.func.isRequired,
   }
 
@@ -40,25 +38,24 @@ export default class AssignInitiative extends Component {
 
     if (foundInvalid) return;
 
-    this.props.onInitiativesAssigned(this.props.encounterDefinition.id, inits);
+    this.props.onInitiativesAssigned(inits);
   }
 
   renderMonsters() {
     const {
-      encounterDefinition: {
-        monsters = [],
+      currentEncounter: {
+        monstersDefinitions = {},
       },
-      monstersDefinitions,
     } = this.props;
 
     const seenDupes = {};
 
-    return monsters.map((monsterId, idx) => {
+    return Object.keys(monstersDefinitions).map((monsterId, idx) => {
       const monster = monstersDefinitions[monsterId];
-      const dupeCount = (seenDupes[monsterId] || 1);
+      const dupeCount = (seenDupes[monster.id] || 1);
       const monsterName = `${monster.name} ${dupeCount}`;
 
-      seenDupes[monsterId] = (seenDupes[monsterId] || 1) + 1;
+      seenDupes[monster.id] = (seenDupes[monster.id] || 1) + 1;
 
       return <div className='list-item' key={`m-${monster.id}-${idx}`}>
         <label htmlFor={`m-${monster.id}-${idx}`} className='input-label'>{monsterName}</label>
@@ -77,10 +74,9 @@ export default class AssignInitiative extends Component {
 
   render() {
     const {
-      encounterDefinition: {
-        players = [],
+      currentEncounter: {
+        playersDefinitions = {},
       },
-      playersDefinitions,
     } = this.props;
 
     return <Popup
@@ -95,9 +91,8 @@ export default class AssignInitiative extends Component {
         </div>
         <div className='assign-initiative-body'>
           {this.renderMonsters()}
-          {players.map((playerId, idx) => {
+          {Object.keys(playersDefinitions).map((playerId, idx) => {
             const player = playersDefinitions[playerId];
-
             return <div className='list-item' key={player.id}>
               <label htmlFor={`p-${player.id}`} className='input-label'>{player.name}</label>
               <select
