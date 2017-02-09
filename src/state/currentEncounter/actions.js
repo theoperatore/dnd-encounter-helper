@@ -4,10 +4,10 @@ export const selectEncounter = createAction('selectEncounter', (id, encountersDe
   const selectedEncounter = encountersDefinitions[id];
   const selectedEncounterMonsters = selectedEncounter
     .monsters
-    .map(mid => ({ ...monstersDefinitions[mid], damage: 0 }))
+    .map((mid, idx) => ({ ...monstersDefinitions[mid], damage: 0, count: idx + 1 }))
     .reduce((out, monster) => ({
       ...out,
-      [monster.id]: {...monster},
+      [`${monster.id}:${monster.count}`]: {...monster},
     }), {});
   return {
     id,

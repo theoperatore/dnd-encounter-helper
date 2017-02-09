@@ -118,7 +118,7 @@ export default class App extends Component {
               : playersDefinitions[id].name;
 
             const damage = isMonster
-              ? currentEncounter.monstersDefinitions[id].damage
+              ? currentEncounter.monstersDefinitions[participant.id].damage
               : currentEncounter.playersDefinitions[id].damage;
 
             return <Character
