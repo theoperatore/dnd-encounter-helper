@@ -61,42 +61,18 @@ export default class App extends Component {
 
   handleSelectEncounter(id) {
     const { encountersDefinitions, monstersDefinitions } = this.props.state;
-    const selectedEncounter = encountersDefinitions[id];
-    const selectedEncounterMonsters = selectedEncounter
-      .monsters
-      .map(mid => ({ ...monstersDefinitions[mid], damage: 0 }))
-      .reduce((out, monster) => ({
-        ...out,
-        [monster.id]: {...monster},
-      }), {});
-
-    this.props.dispatch(selectEncounter(id, selectedEncounterMonsters));
+    this.props.dispatch(selectEncounter(id, encountersDefinitions, monstersDefinitions));
     this.setState({ encounterMenuOpen: false, assignPlayersOpen: true });
   }
 
   handlePlayersAssign(id, players) {
     const { playersDefinitions } = this.props.state;
-    const selectedPlayers = players
-      .map(pid => ({ ...playersDefinitions[pid], damage: 0 }))
-      .reduce((out, player) => ({
-        ...out,
-        [player.id]: {...player},
-      }), {});
-    this.props.dispatch(assignPlayersToEncounter(selectedPlayers));
+    this.props.dispatch(assignPlayersToEncounter(players, playersDefinitions));
     this.setState({ assignPlayersOpen: false, assignInitiativeOpen: true });
   }
 
   handleInitiativesAssigned(combatantsToInitatives) {
-    const order = Object
-      .keys(combatantsToInitatives)
-      .map(playerMonsterIdsWithCount => ({
-        id: playerMonsterIdsWithCount,
-        type: playerMonsterIdsWithCount.split(':').length > 1 ? 'monster' : 'player',
-        initiative: combatantsToInitatives[playerMonsterIdsWithCount],
-      }))
-      .sort((a, b) => b.initiative - a.initiative);
-
-    this.props.dispatch(startEncounter(order));
+    this.props.dispatch(startEncounter(combatantsToInitatives));
     this.setState({ assignInitiativeOpen: false });
   }
 

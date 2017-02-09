@@ -1,33 +1,43 @@
-export function selectEncounter(id, monstersDefinitions) {
+import { createAction } from '../createAction';
+
+export const selectEncounter = createAction('selectEncounter', (id, encountersDefinitions, monstersDefinitions) => {
+  const selectedEncounter = encountersDefinitions[id];
+  const selectedEncounterMonsters = selectedEncounter
+    .monsters
+    .map(mid => ({ ...monstersDefinitions[mid], damage: 0 }))
+    .reduce((out, monster) => ({
+      ...out,
+      [monster.id]: {...monster},
+    }), {});
   return {
-    type: 'selectEncounter',
     id,
-    monstersDefinitions,
+    monstersDefinitions: selectedEncounterMonsters,
   };
-}
+});
 
-export function assignPlayersToEncounter(playersDefinitions) {
-  return {
-    type: 'assignPlayersToEncounter',
-    playersDefinitions,
-  };
-}
+export const assignPlayersToEncounter = createAction('assignPlayersToEncounter', (players, playersDefinitions) => {
+  const selectedPlayers = players
+    .map(pid => ({ ...playersDefinitions[pid], damage: 0 }))
+    .reduce((out, player) => ({
+      ...out,
+      [player.id]: {...player},
+    }), {});
 
-export function startEncounter(order) {
-  return {
-    type: 'startEncounter',
-    order,
-  };
-}
+  return { playersDefinitions: selectedPlayers };
+});
 
-export function nextParticipant() {
-  return {
-    type: 'nextParticipant',
-  };
-}
+export const startEncounter = createAction('startEncounter', combatantsToInitatives => {
+  const order = Object
+    .keys(combatantsToInitatives)
+    .map(playerMonsterIdsWithCount => ({
+      id: playerMonsterIdsWithCount,
+      type: playerMonsterIdsWithCount.split(':').length > 1 ? 'monster' : 'player',
+      initiative: combatantsToInitatives[playerMonsterIdsWithCount],
+    }))
+    .sort((a, b) => b.initiative - a.initiative);
 
-export function clearEncounter() {
-  return {
-    type: 'clearEncounter',
-  };
-}
+  return { order };
+});
+
+export const nextParticipant = createAction('nextParticipant');
+export const clearEncounter = createAction('clearEncounter');
